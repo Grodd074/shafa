@@ -1,4 +1,4 @@
 Modulo A - Corona
 Modulo B - Grodd e Bolas
-Modulo C - ?
+Modulo C - Nagasaki e McGusto
 Modulo D - ?
