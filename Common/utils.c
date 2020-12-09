@@ -67,7 +67,12 @@ SINAL loadFile (FICHEIRO* f, char* file_name, unsigned long block_size)
     long size_of_last_block;
 
     if (block_size < FSIZE_MIN_BLOCK_SIZE)
-        printf("Input block_size: %lu ---> Block Size Minimo de 1024. Avançar com block_size = 1024\n", block_size);
+    {
+        if (block_size == 0)
+            printf("Input block_size: %lu ---> Avançar com default block size = 65536\n", block_size);
+        else
+            printf("Input block_size: %lu ---> Block Size Minimo de 1024. Avançar com block_size = 1024\n", block_size);
+    }
 
     n_blocks = fsize(NULL, file_name, &block_size, &size_of_last_block);
     total = (n_blocks-1) * block_size + size_of_last_block;
