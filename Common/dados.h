@@ -24,6 +24,17 @@ typedef struct
     char ** data;
 } FICHEIRO;
 
-FICHEIRO* inicializar_ficheiro();
+typedef struct
+{
+    bool rle_compression;
+    long long n_blocks;
+    unsigned long block_size;
+    long last_block_size;
+    int** freqs;
+} SYMBSFREQ;
+
+FICHEIRO* inicializarFicheiro();
+SYMBSFREQ* inicializarSymbFreq();
+SYMBSFREQ* allocateFreqsBlocks(SYMBSFREQ* s, long long n);
 
 #endif //SHAFA_DADOS_H

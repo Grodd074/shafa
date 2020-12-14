@@ -6,7 +6,9 @@
 #include "debug.h"
 
 SINAL loadFile (FICHEIRO* f, char* file_name, unsigned long block_size);
+
 void printFileData (FICHEIRO* f);
 void printBlockData (char* block, int block_size);
+void printSymbsFreq (SYMBSFREQ* s);
 
 #endif //SHAFA_UTILS_H

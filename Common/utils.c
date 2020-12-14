@@ -123,3 +123,20 @@ void printFileData (FICHEIRO* f)
     printBlockData(f->data[f->n_blocks-1], f->last_block_size);
     printf("\n");
 }
+
+void printSymbsFreq (SYMBSFREQ* s)
+{
+    printf("RLE: %d\n", s->rle_compression);
+    printf("NBLOCKS: %lld\n", s->n_blocks);
+    printf("BLOCK_SIZE: %lu\n", s->block_size);
+    printf("LAST BLOCK SIZE: %lu\n", s->last_block_size);
+
+    for(int i=0; i<s->n_blocks; i++)
+    {
+        printf("\nBlock%d:\n", i);
+        for(int j=0; j<256; j++){
+            printf("%d:%d\n", j ,s->freqs[i][j]);
+        }
+    }
+    printf("\n");
+}
