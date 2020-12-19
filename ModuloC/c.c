@@ -6,3 +6,11 @@ SINAL moduloC(char* file_name)
 
 }
 
+SINAL matrix_code(FICHEIRO fp){
+    
+
+
+
+
+}
+
