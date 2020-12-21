@@ -4,7 +4,7 @@ Modulo B - Grodd e Bolas
 
 Modulo C - Nagasaki e McNograma
 
-Modulo D - ?
+Modulo D - Noodle e Yakari
 
 
 Convenções do código:
