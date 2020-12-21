@@ -8,8 +8,9 @@ SINAL moduloC(char* file_name)
 
 SINAL matrix_code(char *nome){
 
-    int qtlidas, n_blocos, size, x = 0, y = 0;
-    
+    int qtlidas, x = 0, y = 0;
+    long long int n_blocos;
+    unsigned long size;
     char c, modo;
     char *binstr;
     FILE *fp = fopen(nome,"r");
@@ -21,7 +22,7 @@ SINAL matrix_code(char *nome){
 
     char *temp = binstr;
     int index = 1;
-    for(int i = n_blocos;((c = fget(fp)) != EOF) && i > 0;i--){
+    for(int i = n_blocos;((c = fgetc(fp)) != EOF) && i > 0;i--){
         if(c == ';'){
             binstr = temp;
             matrix[x][y] = binstr;
