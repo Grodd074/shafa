@@ -6,7 +6,13 @@ SINAL moduloC(char* file_name)
 
 }
 
-SINAL matrix_code(char *nome){
+void file_to_buffers(FILE *fp){
+    
+}
+
+
+
+/*SINAL matrix_code(char *nome){
 
     int qtlidas, x = 0, y = 0;
     long long int n_blocos;
@@ -40,5 +46,5 @@ SINAL matrix_code(char *nome){
             binstr++;
         }
     }    
-}
+}*/
 
