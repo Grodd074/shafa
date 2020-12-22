@@ -6,8 +6,28 @@ SINAL moduloC(char* file_name)
 
 }
 
-void file_to_buffers(FILE *fp){
-    
+char *cod_to_buffer(FILE*cod){
+    int size_cod;
+    fseek(cod,0L,SEEK_END);
+    size_cod=ftell(cod);
+    char*buffer_cod=malloc(size_cod);
+    fseek(cod,0L,SEEK_SET);
+    fread(buffer_cod,size_cod,1,cod);
+    return buffer_cod;
+}
+
+
+char** file_to_buffers(FILE *fp,char*buffer_cod){
+    int nblocos,sizeblocos;
+    char modo;
+    sscanf(buffer_cod,"@%c@%d@%d",&modo,&nblocos,&sizeblocos);
+    fseek(fp,0L,SEEK_SET);
+    char**buffer_file=malloc(sizeof(char*)*nblocos);
+    for (int i=0; i < nblocos; i++){
+        buffer_file[i]=malloc(sizeblocos);
+        fread(buffer_file[i],sizeblocos,1,fp);
+    }
+    return buffer_file;
 }
 
 
