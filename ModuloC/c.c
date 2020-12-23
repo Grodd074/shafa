@@ -6,6 +6,27 @@ SINAL moduloC(char* file_name)
 
 }
 
+int skip_inicial(char *buffer){
+    int index=3;
+    while(*(buffer+index)!='@'){
+        index++;
+    }
+    return index;
+}
+
+int skip_arroba(int nArroba,int index,char *buffer){
+    while(nArroba>=0){
+        if(*(buffer+index)=='@')nArroba--;
+        index++;
+    }
+    return index;
+}
+
+int skip_semicolon(int index,char *buffer){
+    while (*(buffer+index)!=';') index++;
+    return index;
+}
+
 char *cod_to_buffer(FILE*cod){
     int size_cod;
     fseek(cod,0L,SEEK_END);
@@ -16,42 +37,39 @@ char *cod_to_buffer(FILE*cod){
     return buffer_cod;
 }
 
-char matrix_code(char *buffer){
-    int nblocos,size,i=0,k=0;
-    int *tamanhos;
+int matrix_code(char *buffer){
+    int nblocos,size=0,iLinha=(-1),iColuna,iArray,iTamanhos=0;
+    int *tamanhos=malloc(nblocos*sizeof(int));
     sscanf(buffer,"@%*c@%d",&nblocos);
     char ***matrix=malloc(sizeof(char*)*nblocos);
-    char *bufferaux=buffer, *codigo;
-    skip(2,bufferaux);
-    for(;*bufferaux!='\0';){
-        if(*bufferaux==';'){
-            bufferaux++;
-            *matrix++;
-            //precisa de trabalho
+    char *codigo=malloc(256*sizeof(char));
+    for(iArray=skip_inicial(buffer);*(buffer+iArray)!='\0';){
+        if(*(buffer+iArray)==';'){
+            matrix[iLinha][iColuna]=malloc(sizeof(char*));
+            matrix[iLinha][iColuna]='\0';
+            iArray++;
+            iColuna++;
         }
-        else if(*bufferaux=='@'){
-            sscanf(bufferaux,"@%d@",&size);
-            *tamanhos=size;
-            tamanhos++;
-            skip_arroba(1,bufferaux);
+        else if((*(buffer+iArray)=='@')&&(*(buffer+iArray+1)=='0')){
+            return 0;
+        }
+        else if(*(buffer+iArray)=='@'){
+            sscanf((buffer+iArray),"@%d@",&size);
+            tamanhos[iTamanhos]=size;
+            iTamanhos++;
+            iArray=skip_arroba(1,iArray,buffer);
+            iColuna=0;
+            iLinha++;
+            matrix[iLinha]=malloc(256*sizeof(char*));
         }
         else{
-            sscanf(bufferaux,"%s;",&codigo);
-            skip_semicolon(bufferaux);
-            //precisa de trabalho
-        } 
+            sscanf((buffer+iArray),"%[^;]",codigo);
+            matrix[iLinha][iColuna]=malloc(sizeof(char)*256);
+            matrix[iLinha][iColuna]=codigo;
+            iArray=skip_semicolon(iArray,buffer);
+            *codigo='\0';
+        }
     }
-}
-
-void skip_arroba(int n,char *buffer){
-    while(n>=0){
-        if(*buffer=='@')n--;
-        buffer++;
-    }
-}
-
-void skip_semicolon(char *buffer){
-    while (*buffer!=';') buffer++;
 }
 
 char** file_to_buffers(FILE *fp,char*buffer_cod){
@@ -66,42 +84,3 @@ char** file_to_buffers(FILE *fp,char*buffer_cod){
     }
     return buffer_file;
 }
-
-
-
-/*SINAL matrix_code(char *nome){
-
-    int qtlidas, x = 0, y = 0;
-    long long int n_blocos;
-    unsigned long size;
-    char c, modo;
-    char *binstr;
-    FILE *fp = fopen(nome,"r");
-    qtlidas = fscanf(fp,"@%c@%lld@%lu@",&modo,&n_blocos,&size);
-    unsigned long arrblocos[n_blocos];
-    arrblocos[0] = size;
-
-    char *matrix[n_blocos][256];
-
-    char *temp = binstr;
-    int index = 1;
-    for(int i = n_blocos;((c = fgetc(fp)) != EOF) && i > 0;i--){
-        if(c == ';'){
-            binstr = temp;
-            matrix[x][y] = binstr;
-            y++;
-        }
-        else if(c == '@'){
-            qtlidas = fscanf(fp,"@%lu@",&size);
-            arrblocos[index] = size;
-            index++;
-            y = 0;
-            x++;
-        }
-        else{
-            (*binstr) = c;
-            binstr++;
-        }
-    }    
-}*/
-
