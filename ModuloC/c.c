@@ -16,6 +16,43 @@ char *cod_to_buffer(FILE*cod){
     return buffer_cod;
 }
 
+char matrix_code(char *buffer){
+    int nblocos,size,i=0,k=0;
+    int *tamanhos;
+    sscanf(buffer,"@%*c@%d",&nblocos);
+    char ***matrix=malloc(sizeof(char*)*nblocos);
+    char *bufferaux=buffer, *codigo;
+    skip(2,bufferaux);
+    for(;*bufferaux!='\0';){
+        if(*bufferaux==';'){
+            bufferaux++;
+            *matrix++;
+            //precisa de trabalho
+        }
+        else if(*bufferaux=='@'){
+            sscanf(bufferaux,"@%d@",&size);
+            *tamanhos=size;
+            tamanhos++;
+            skip_arroba(1,bufferaux);
+        }
+        else{
+            sscanf(bufferaux,"%s;",&codigo);
+            skip_semicolon(bufferaux);
+            //precisa de trabalho
+        } 
+    }
+}
+
+void skip_arroba(int n,char *buffer){
+    while(n>=0){
+        if(*buffer=='@')n--;
+        buffer++;
+    }
+}
+
+void skip_semicolon(char *buffer){
+    while (*buffer!=';') buffer++;
+}
 
 char** file_to_buffers(FILE *fp,char*buffer_cod){
     int nblocos,sizeblocos;
