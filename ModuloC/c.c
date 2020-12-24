@@ -1,10 +1,7 @@
-#include "c.h"
-#include "stdio.h"
-SINAL moduloC(char* file_name)
-{
-    printf("MODULO C\n");
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-}
 
 int skip_inicial(char *buffer){
     int index=3;
@@ -83,4 +80,12 @@ char** file_to_buffers(FILE *fp,char*buffer_cod){
         fread(buffer_file[i],sizeblocos,1,fp);
     }
     return buffer_file;
+}
+
+int max_size(char**buffer){
+    int max=0,i;
+    for(i=0;buffer[i]!='\0';i++){
+        if(strlen(buffer[i])>max) max=strlen(buffer[i]);
+    }
+    return max;
 }
