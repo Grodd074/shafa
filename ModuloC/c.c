@@ -119,15 +119,24 @@ char *string_to_print(int bloco,char**buffer,char***matrix){
 }
 
 char char_to_print(char* string){
-    int c=0,i=0,k=7,n=0;
+    int c=0,i=0,k=7,n=0,size=0;
+    size=strlen(string);
     char print;
-    for(;i<8;i++){
+    for(;i<size;i++){
         n=string[i]-'0';
         c+=n<<k;
         k--;
     }
     print=(char)c;
     return print;
+}
+
+char *pad(char*array,int n, int size){
+    for(;n;n--){
+        array[size]='0';
+        size++;
+    }
+    return array;
 }
 
 void printfile(FICHEIROCOD cod,FICHEIROORIGINAL file){
@@ -146,12 +155,10 @@ void printfile(FICHEIROCOD cod,FICHEIROORIGINAL file){
     for(;i<(cod.n_blocos);i++){
         temp=string_to_print(i,file.buffer,cod.matrix);
         size=strlen(temp);
+        if(!(size%8))size=(size/8)+1;
         fprintf(fp,"@%d@",size);
-        for(offset=8-(size%8);n<offset;n++){
-            temp[size+n]='0';
-        }
         for(;temp[k];k+=8){
-            c=char_to_print((temp+k));
+            c=char_to_print(temp+k);
             fputc(c,fp);
             test=temp+k;
         }
