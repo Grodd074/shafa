@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "c.h"
+
+
 int skip_inicial(char *buffer){
     int index=3;
     while(*(buffer+index)!='@'){
@@ -33,47 +35,47 @@ char *cod_to_buffer(FILE*cod){
     return buffer_cod;
 }
 
-FICHEIROCOD matrix_code(char *buffer){
-    FICHEIROCOD ficheiro;
+FICHEIROCOD *matrix_code(char *buffer){
+    FICHEIROCOD *ficheiro=malloc(sizeof(FICHEIROCOD));
     char modo;
-    int nblocos,size=0,iLinha=(-1),iColuna,iArray,iTamanhos=0;
-    int *tamanhos=malloc(nblocos*sizeof(int));
-    sscanf(buffer,"@%c@%d",&modo,&nblocos);
-    char ***matrix=malloc(sizeof(char*)*nblocos);
+    int size=0,iLinha=(-1),iColuna,iArray,iTamanhos=0;
+    ficheiro->tamanhos=malloc(sizeof(int)*(ficheiro->n_blocos));
+    sscanf(buffer,"@%c@%d",&modo,&(ficheiro->n_blocos));
+    ficheiro->modo = (modo=='R') ? true : false; 
+    ficheiro->matrix=malloc(sizeof(char*)*ficheiro->n_blocos);
     char *codigo=malloc(256*sizeof(char));
     for(iArray=skip_inicial(buffer);*(buffer+iArray)!='\0';){
         if(*(buffer+iArray)==';'){
-            matrix[iLinha][iColuna]=malloc(sizeof(char*));
-            matrix[iLinha][iColuna]='\0';
             iArray++;
             iColuna++;
+            ficheiro->matrix[iLinha][iColuna]="";
         }
         else if((*(buffer+iArray)=='@')&&(*(buffer+iArray+1)=='0')){
-            ficheiro.matrix=matrix;
-            ficheiro.n_blocos=nblocos;
-            ficheiro.tamanhos=tamanhos;
-            ficheiro.modo = (modo=='R') ? true : false; 
             return ficheiro;
         }
-        else if(*(buffer+iArray)=='@'){
+          else if(*(buffer+iArray)=='@'){
             sscanf((buffer+iArray),"@%d@",&size);
-            tamanhos[iTamanhos]=size;
+            ficheiro->tamanhos[iTamanhos]=size;
             iTamanhos++;
             iArray=skip_arroba(1,iArray,buffer);
             iColuna=0;
             iLinha++;
-            matrix[iLinha]=malloc(256*sizeof(char*));
+            ficheiro->matrix[iLinha]=malloc(256*sizeof(char*));
+            ficheiro->matrix[iLinha][iColuna]="";
         }
         else{
             sscanf((buffer+iArray),"%[^;]",codigo);
-            matrix[iLinha][iColuna]=malloc(sizeof(char)*256);
-            matrix[iLinha][iColuna]=codigo;
+            ficheiro->matrix[iLinha][iColuna]=malloc(sizeof(char)*256);
+            strcpy(ficheiro->matrix[iLinha][iColuna],codigo);
             iArray=skip_semicolon(iArray,buffer);
-            *codigo='\0';
+            codigo[0]='\0';
         }
     }
+    return ficheiro;
     
 }
+
+
 
 FICHEIROORIGINAL file_to_buffers(FILE *fp,FICHEIROCOD cod,FICHEIROORIGINAL ficheiro){
     int nblocos=cod.n_blocos,sizeblocos=cod.tamanhos[0];
@@ -90,20 +92,16 @@ FICHEIROORIGINAL file_to_buffers(FILE *fp,FICHEIROCOD cod,FICHEIROORIGINAL fiche
 
 int max_size(char**blocomatrix){
     int max=0,i;
-    for(i=0;blocomatrix[i];i++){
+    for(i=0;i<256;i++){
         if(strlen(blocomatrix[i])>max) max=strlen(blocomatrix[i]);
     }
     return max;
 }
 
 int max_size_matriz(char***matrix){
-    int max=0,i,j;
+    int i,j,max=0;
     for(i=0;matrix[i];i++){
-        for(j=0;matrix[i][j];j++){
-            if(strlen(matrix[i][j])>max){
-                max=strlen(matrix[i][j]);
-            }
-        }
+        if(max_size(matrix[i])>max) max = max_size(matrix[i]);
     }
     return max;
 }
@@ -111,7 +109,7 @@ int max_size_matriz(char***matrix){
 char *string_to_print(int bloco,char**buffer,char***matrix){
     int i=0,tam=2048;
     char *string=malloc(sizeof(char)*max_size(matrix[bloco])*tam);
-    string='\0';
+    string[0]='\0';
     char c;
     for(;(i<tam)&&(buffer[bloco][i]!='\0');i++){
         c=buffer[bloco][i];
@@ -133,25 +131,32 @@ char char_to_print(char* string){
 }
 
 void printfile(FICHEIROCOD cod,FICHEIROORIGINAL file){
-    int i=0,k=0,tam=cod.tamanhos[0],nblocos=cod.n_blocos;
-    char*temp=malloc(sizeof(char)*max_size_matriz(cod.matrix)*tam);
+    int i=0,k=0,n=0,tam=cod.tamanhos[0],nblocos=cod.n_blocos,max=0,size=0,offset=0;
+    max=max_size_matriz(cod.matrix);
+    char*temp=malloc(sizeof(char)*max*tam);
+    char*test=malloc(sizeof(char)*max*tam);
     temp='\0';
     char c;
     char*str=malloc(sizeof(char)*256);
-    int *tamanhos=malloc(sizeof(int)*nblocos);
-    strcpy(str,file.nome);
+    strcat(str,file.nome);
     strcat(str,".shaf");
     FILE *fp;
     fp=fopen(str,"w");
-    fprintf(fp,"@%d",&nblocos);
+    fprintf(fp,"@%d",nblocos);
     for(;i<(cod.n_blocos);i++){
-        fprintf(fp,"@%d@",tamanhos[i]);
         temp=string_to_print(i,file.buffer,cod.matrix);
+        size=strlen(temp);
+        fprintf(fp,"@%d@",size);
+        for(offset=8-(size%8);n<offset;n++){
+            temp[size+n]='0';
+        }
         for(;temp[k];k+=8){
             c=char_to_print((temp+k));
             fputc(c,fp);
+            test=temp+k;
         }
         temp='\0';
+        k=0;
     }
     fclose(fp);
 }

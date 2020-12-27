@@ -21,7 +21,6 @@ int skip_inicial(char *buffer);
 int skip_arroba(int nArroba,int index,char *buffer);
 int skip_semicolon(int index,char *buffer);
 char *cod_to_buffer(FILE*cod);
-FICHEIROCOD matrix_code(char *buffer);
 FICHEIROORIGINAL file_to_buffers(FILE *fp,FICHEIROCOD cod,FICHEIROORIGINAL ficheiro);
 
 #endif //SHAFA_C_H
