@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "c.h"
 
 
@@ -157,6 +158,7 @@ void printfile(FICHEIROCOD cod,FICHEIROORIGINAL file){
         size=strlen(temp);
         if(!(size%8))size=(size/8)+1;
         fprintf(fp,"@%d@",size);
+        cod.tamanhos[i] = size;
         for(;temp[k];k+=8){
             c=char_to_print(temp+k);
             fputc(c,fp);
@@ -167,3 +169,24 @@ void printfile(FICHEIROCOD cod,FICHEIROORIGINAL file){
     }
     fclose(fp);
 }
+
+int data_console(FICHEIROORIGINAL origin, FICHEIROCOD cod, int *size, float tempo){
+    int j = 1, n = 0, antes, depois, nbloco = cod.n_blocos;
+    float taxa, taxa_global;
+    printf("Daniel Constantino Faria, a93187/João Augusto Macedo Moreira, a93326, MIEI/CD, 1-jan-2021\n"
+           "Módulo: c (codificação dum ficheiro de símbolos)\n"
+           "Número de blocos: %d\n",nbloco);
+    for (; j <= nbloco; j++, n++){
+        antes = size[n];
+        depois = cod.tamanhos[n];
+        taxa = 100 - ((float)depois / antes * 100);
+        printf("Tamanho antes/depois & taxa de compressão (bloco %d): %d/%d || %.2f%%\n", j, antes, depois, taxa);
+        taxa_global += taxa;
+    }
+    taxa_global /= cod.n_blocos;
+    printf("Taxa de compressão global: %.2f%%\n"
+           "Tempo de execução do módulo (milissegundos): %f\n"
+           "Ficheiro gerado: %s.shaf\n",taxa_global, tempo, origin.nome);
+}
+
+
