@@ -156,7 +156,7 @@ void printfile(FICHEIROCOD cod,FICHEIROORIGINAL file){
     for(;i<(cod.n_blocos);i++){
         temp=string_to_print(i,file.buffer,cod.matrix);
         size=strlen(temp);
-        if(!(size%8))size=(size/8)+1;
+        if((size%8))size=(size/8)+1;
         fprintf(fp,"@%d@",size);
         cod.tamanhos[i] = size;
         for(;temp[k];k+=8){
