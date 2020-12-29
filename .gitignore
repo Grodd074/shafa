@@ -3,3 +3,6 @@
 CMakeLists.txt
 .idea/
 *.o
+/.dist/
+/.vscode/
+/build/
