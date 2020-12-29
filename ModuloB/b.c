@@ -1,6 +1,7 @@
 #include "b.h"
 #include "stdio.h"
 #include "../Common/utils.h"
+
 SINAL moduloB(char* file_name)
 {
     SINAL s;
@@ -8,7 +9,8 @@ SINAL moduloB(char* file_name)
     symbs = inicializarSymbFreq();
     s = readFreqs(symbs, file_name);
     printSymbsFreq(symbs);
-    return s;
+    printf("MODULO B\n");
+    return 0;
 }
 
 void readMetaData (FILE* fp, SYMBSFREQ* symbs)

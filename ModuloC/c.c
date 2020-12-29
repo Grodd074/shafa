@@ -190,3 +190,7 @@ int data_console(FICHEIROORIGINAL origin, FICHEIROCOD cod, int *size, float temp
 }
 
 
+SINAL moduloC (char* file_name) {
+    printf("MODULO C\n");
+    return 0;
+}

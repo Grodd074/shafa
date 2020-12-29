@@ -7,6 +7,8 @@
 #include "ModuloD/d.h"
 #include "Common/dados.h"
 #include "Common/utils.h"
+#include "Common/debug.h"
+
 
 int main (int argc, char* argv[]) {
     int default_size = 65536;
@@ -15,12 +17,16 @@ int main (int argc, char* argv[]) {
     int descm_SF = 0;  // Se estiver a 1, apenas realiza a descompressão SF.
     char* file_name = argv[1];
 
-    if (argc == 1) printf("Tem que especificar pelo menos o nome do ficheiro de input.\n");
+    if (argc == 1) {
+        printf("Tem que especificar pelo menos o nome do ficheiro de input.\n");
+        return 0;
+    }
     if (argc == 2) { // executamos os módulos todos
         moduloA(file_name, default_size, force_RLE);
         moduloB(file_name);
         moduloC(file_name);
         moduloD(file_name, descm_RLE, descm_SF);
+        return 0;
     }
 
     if (argc > 2) { // Ciclo para ativar as flags que vão alterar os tamanhos dos blocos ou alterar o funcionamento normal do programa.
