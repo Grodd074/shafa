@@ -33,6 +33,20 @@ typedef struct
     int** freqs;
 } SYMBSFREQ;
 
+typedef struct BINSTRNODE
+{
+    char c;
+    struct BINSTRNODE* prox;
+} *LBINSTR;
+
+typedef struct SYMBFREQNODE
+{
+    unsigned char symb;
+    int freq;
+    LBINSTR bin_str;
+    struct SYMBFREQNODE* prox;
+} *LSYMBFREQ;
+
 FICHEIRO* inicializarFicheiro();
 SYMBSFREQ* inicializarSymbFreq();
 SYMBSFREQ* allocateFreqsBlocks(SYMBSFREQ* s, long long n);

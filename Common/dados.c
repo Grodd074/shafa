@@ -1,6 +1,6 @@
 #include "dados.h"
 
-FICHEIRO* inicializaFicheiro()
+FICHEIRO* inicializarFicheiro()
 {
     FICHEIRO* f = malloc(sizeof(FICHEIRO));
     f->total_data_size = 0;

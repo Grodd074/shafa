@@ -140,3 +140,22 @@ void printSymbsFreq (SYMBSFREQ* s)
     }
     printf("\n");
 }
+
+int fileSize(char* file_name)
+{
+    // Le quantos caracters tem o ficheiro
+    FILE* fp = fopen(file_name, "r");
+    if (!fp) printf("Error opening file %s", file_name);
+    fseek( fp , 0 , SEEK_END);
+    int size = ftell( fp );
+    rewind( fp );
+    return size;
+}
+
+int soma(int* arr, int i, int j)
+{
+    if (i>j) return -1;
+    int soma = 0;
+    for(int k=i; k<=j; k++) soma += arr[k];
+    return soma;
+}

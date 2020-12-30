@@ -11,4 +11,9 @@ void printFileData (FICHEIRO* f);
 void printBlockData (char* block, int block_size);
 void printSymbsFreq (SYMBSFREQ* s);
 
+int fileSize(char* file_name);
+
+int soma(int* arr, int i, int j);
+
+
 #endif //SHAFA_UTILS_H

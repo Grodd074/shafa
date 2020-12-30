@@ -9,7 +9,6 @@
 #include "Common/utils.h"
 #include "Common/debug.h"
 
-
 int main (int argc, char* argv[]) {
     int default_size = 65536;
     int force_RLE = 0; // Se estiver a 0, a compressão RLE não é forçada. Se estiver a 1, a compressão RLE é forçada.
