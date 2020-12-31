@@ -190,7 +190,39 @@ int data_console(FICHEIROORIGINAL origin, FICHEIROCOD cod, int *size, float temp
 }
 
 
-SINAL moduloC (char* file_name) {
-    printf("MODULO C\n");
-    return 0;
+SINAL moduloC(char *file_name){
+    clock_t tempoOrd;
+    tempoOrd = clock();
+
+    printf("MODULO C\n\n");
+
+    int i = strlen(file_name);
+    char *str = malloc(i + 4);
+    strcat(str, file_name);
+    strcat(str, ".cod");
+
+    FILE *file;
+    FILE *cod;
+    file = fopen(file_name, "r");
+    cod = fopen(str, "r");
+
+    if (cod != NULL){
+        FICHEIROCOD codfile;
+        FICHEIROORIGINAL originfile;
+        originfile.nome = file_name;
+        char *buffer = '\0';
+        int size = cod_to_buffer(&buffer, cod);
+        codfile = *matrix_code(size, buffer);
+        int *tamanhos = malloc(sizeof(int) * (codfile.n_blocos));
+        for (int j = 0; j < codfile.n_blocos; j++)
+            tamanhos[j] = codfile.tamanhos[j];
+        originfile = file_to_buffers(file, codfile, originfile);
+        printfile(codfile, originfile);
+        fclose(cod);
+        fclose(file);
+        data_console(originfile, codfile, tamanhos, ((clock() - tempoOrd) / (double)CLOCKS_PER_SEC));
+    }
+    else{
+        printf("Não existe o ficheiro %s\n", str);
+    }
 }
