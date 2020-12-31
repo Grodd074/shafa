@@ -203,8 +203,8 @@ SINAL moduloC(char *file_name){
 
     FILE *file;
     FILE *cod;
-    file = fopen(file_name, "r");
-    cod = fopen(str, "r");
+    file = fopen(file_name, "rb");
+    cod = fopen(str, "rb");
 
     if (cod != NULL){
         FICHEIROCOD codfile;
