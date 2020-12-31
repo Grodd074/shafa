@@ -25,6 +25,7 @@ FICHEIROORIGINAL file_to_buffers(FILE *fp, FICHEIROCOD cod, FICHEIROORIGINAL fic
 char char_to_print(int size,char* string);
 int newstring(int tam_ant,int nbloco,char*bloco_original,FICHEIROCOD cod,char*output);
 void printfile(FICHEIROCOD cod,FICHEIROORIGINAL file);
+SINAL moduloC(char *file_name);
 
 #endif //SHAFA_C_H
 
