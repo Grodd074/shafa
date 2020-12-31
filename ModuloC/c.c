@@ -46,7 +46,7 @@ FICHEIROCOD *matrix_code(int size,char *buffer){
     ficheiro->n_blocos=n_blocos;
     ficheiro->modo = (modo=='R') ? true : false; 
     ficheiro->matrix=malloc(sizeof(char*)*ficheiro->n_blocos);
-    char *codigo=malloc(256*sizeof(char));
+    unsigned char *codigo=malloc(256*sizeof(char));
     for(iArray=skip_inicial(buffer);iArray<size;){
         if(*(buffer+iArray)==';'){
             iArray++;
@@ -90,7 +90,7 @@ FICHEIROORIGINAL file_to_buffers(FILE *fp, FICHEIROCOD cod, FICHEIROORIGINAL fic
     int nblocos = cod.n_blocos, sizeblocos;
     bool modo = cod.modo;
     fseek(fp, 0L, SEEK_SET);
-    char **buffer_file = malloc(sizeof(char *) * nblocos);
+    unsigned char **buffer_file = malloc(sizeof(char *) * nblocos);
     for (int i = 0; i < nblocos; i++){
         sizeblocos = cod.tamanhos[i];
         buffer_file[i] = malloc(sizeof(char) * sizeblocos);
@@ -104,22 +104,22 @@ FICHEIROORIGINAL file_to_buffers(FILE *fp, FICHEIROCOD cod, FICHEIROORIGINAL fic
 
 //Tratamento ficheiro final
 
-char char_to_print(int size,char* string){
+unsigned char char_to_print(int size,char* string){
     int c=0,i=0,k=7,n=0;
-    char print;
+    unsigned char print;
     for(;i<size;i++){
         n=string[i]-'0';
         c+=n<<k;
         k--;
     }
-    print=(char)c;
+    print=c;
     return print;
 }
 
 int newstring(int tam_ant,int nbloco,char*bloco_original,FICHEIROCOD cod,char*output){
     int index,tam_dep=0,size_cod=0,new_string_index=0,counter=0,max=cod.max_cod_size;
-    char car;
-    char *codigo=malloc(sizeof(char)*(max+1));
+    unsigned char car;
+    unsigned char *codigo=malloc(sizeof(char)*(max+1));
     for(index=0;index<tam_ant;index++){
         car=bloco_original[index];
         size_cod=strlen(cod.matrix[nbloco][car]);
@@ -136,14 +136,14 @@ int newstring(int tam_ant,int nbloco,char*bloco_original,FICHEIROCOD cod,char*ou
 void printfile(FICHEIROCOD cod,FICHEIROORIGINAL file){
     int i=0,tam,max=0,new_size=0,tamres=0,allocsize=0;
     max=cod.max_cod_size;
-    char c;
-    char*str=malloc(sizeof(char)*256);
+    unsigned char c;
+    unsigned char*str=malloc(sizeof(char)*256);
     strcat(str,file.nome);
     strcat(str,".shaf");
     FILE *fp;
     fp=fopen(str,"wb");
     fprintf(fp,"@%d",cod.n_blocos);
-    char*output;
+    unsigned char*output;
     for(i=0;i<cod.n_blocos;i++){
         tam=cod.tamanhos[i];
         allocsize=sizeof(char)*cod.tamanhos[i]*max;
