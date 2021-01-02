@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "c.h"
+#include <time.h>
 
 
 //Tratamento ficheiro cod
@@ -38,15 +39,15 @@ int cod_to_buffer(char**buffer,FILE*cod){
 }
 
 FICHEIROCOD *matrix_code(int size,char *buffer){
-    FICHEIROCOD *ficheiro=malloc(sizeof(FICHEIROCOD));
+    FICHEIROCOD *ficheiro=malloc(sizeof(FICHEIROCOD)); 
     char modo;
     int iLinha=(-1),iColuna,iArray,iTamanhos=0,n_blocos=0,cod_size=0,max=0,bloco_size=0;
     sscanf(buffer,"@%c@%d",&modo,&(n_blocos));
     ficheiro->tamanhos=malloc(sizeof(int)*n_blocos);
     ficheiro->n_blocos=n_blocos;
     ficheiro->modo = (modo=='R') ? true : false; 
-    ficheiro->matrix=malloc(sizeof(char*)*(ficheiro->n_blocos));
-    char *codigo=malloc(256*sizeof(char));
+    ficheiro->matrix=malloc((ficheiro->n_blocos));
+    char *codigo=malloc(256);
     for(iArray=skip_inicial(buffer);iArray<size;){
         if(*(buffer+iArray)==';'){
             iArray++;
@@ -60,7 +61,7 @@ FICHEIROCOD *matrix_code(int size,char *buffer){
           else if(*(buffer+iArray)=='@'){
             iColuna=0;
             iLinha++;
-            ficheiro->matrix[iLinha]=malloc(256*sizeof(char*));
+            ficheiro->matrix[iLinha]=malloc(256);
             ficheiro->matrix[iLinha][iColuna]="";
             sscanf((buffer+iArray),"@%d@",&bloco_size);
             ficheiro->tamanhos[iTamanhos]=bloco_size;
@@ -71,7 +72,7 @@ FICHEIROCOD *matrix_code(int size,char *buffer){
             sscanf((buffer+iArray),"%[^;]",codigo);
             cod_size=strlen(codigo);
             if(cod_size>max) max=cod_size;
-            ficheiro->matrix[iLinha][iColuna]=malloc(sizeof(char)*cod_size);
+            ficheiro->matrix[iLinha][iColuna]=malloc(cod_size);
             strcpy(ficheiro->matrix[iLinha][iColuna],codigo);
             iArray=skip_semicolon(iArray,buffer);
             codigo[0]='\0';
@@ -90,10 +91,10 @@ FICHEIROORIGINAL file_to_buffers(FILE *fp, FICHEIROCOD cod, FICHEIROORIGINAL fic
     int nblocos = cod.n_blocos, sizeblocos;
     bool modo = cod.modo;
     fseek(fp, 0L, SEEK_SET);
-    unsigned char **buffer_file = malloc(sizeof(char *) * nblocos);
+    unsigned char **buffer_file = malloc(nblocos);
     for (int i = 0; i < nblocos; i++){
         sizeblocos = cod.tamanhos[i];
-        buffer_file[i] = malloc(sizeof(char) * sizeblocos);
+        buffer_file[i] = malloc(sizeblocos);
         fread(buffer_file[i], sizeblocos, 1, fp);
     }
     ficheiro.buffer = buffer_file;
@@ -119,7 +120,7 @@ unsigned char char_to_print(int size,char* string){
 int newstring(int tam_ant,int nbloco,char*bloco_original,FICHEIROCOD cod,char*output){
     int index,tam_dep=0,size_cod=0,new_string_index=0,counter=0,max=cod.max_cod_size;
     unsigned char car;
-    char *codigo=malloc(sizeof(char)*(max+1));
+    char *codigo=malloc((max+1));
     int i=0;
     for(index=0;index<tam_ant;index++){
         car=bloco_original[index];
@@ -135,10 +136,10 @@ int newstring(int tam_ant,int nbloco,char*bloco_original,FICHEIROCOD cod,char*ou
 }
 
 void printfile(FICHEIROCOD cod,FICHEIROORIGINAL file){
-    int i=0,tam,max=0,new_size=0,tamres=0,allocsize=0;
+    int i=0,tam,max=0,new_size=0,tamres=0,allocsize=0,size_aux=0;
     max=cod.max_cod_size;
     unsigned char c;
-    unsigned char*str=malloc(sizeof(char)*256);
+    unsigned char*str=malloc(256);
     strcat(str,file.nome);
     strcat(str,".shaf");
     FILE *fp;
@@ -147,13 +148,19 @@ void printfile(FICHEIROCOD cod,FICHEIROORIGINAL file){
     unsigned char*output;
     for(i=0;i<cod.n_blocos;i++){
         tam=cod.tamanhos[i];
-        allocsize=sizeof(char)*cod.tamanhos[i]*max;
+        allocsize=cod.tamanhos[i]*max;
         output=malloc(allocsize);
         new_size=newstring(tam,i,file.buffer[i],cod,output);
 
-        if(new_size%8) fprintf(fp,"@%d@",(new_size/8)+1);
-        else fprintf(fp,"@%d@",new_size/8);
-
+        if(new_size%8) {
+            size_aux=(new_size/8)+1;
+            fprintf(fp,"@%d@",size_aux);
+        }
+        else {
+            size_aux=new_size/8;
+            fprintf(fp,"@%d@",size_aux);
+        }
+        cod.tamanhos[i]=size_aux;
         for(int counter=0;counter<new_size;){
             tamres=new_size-counter;
             if(tamres<8){
@@ -170,6 +177,10 @@ void printfile(FICHEIROCOD cod,FICHEIROORIGINAL file){
 
     fclose(fp);
 }
+
+
+
+//Informação para a consola
 
 int data_console(FICHEIROORIGINAL origin, FICHEIROCOD cod, int *size, float tempo){
     int j = 1, n = 0, antes, depois, nbloco = cod.n_blocos;
@@ -190,6 +201,9 @@ int data_console(FICHEIROORIGINAL origin, FICHEIROCOD cod, int *size, float temp
            "Ficheiro gerado: %s.shaf\n",taxa_global, tempo, origin.nome);
 }
 
+
+
+//Main do módulo C
 
 SINAL moduloC(char *file_name){
     clock_t tempoOrd;
