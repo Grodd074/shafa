@@ -41,12 +41,12 @@ FICHEIROCOD *matrix_code(int size,char *buffer){
     FICHEIROCOD *ficheiro=malloc(sizeof(FICHEIROCOD));
     char modo;
     int iLinha=(-1),iColuna,iArray,iTamanhos=0,n_blocos=0,cod_size=0,max=0,bloco_size=0;
-    ficheiro->tamanhos=malloc(sizeof(int)*(ficheiro->n_blocos));
     sscanf(buffer,"@%c@%d",&modo,&(n_blocos));
+    ficheiro->tamanhos=malloc(sizeof(int)*n_blocos);
     ficheiro->n_blocos=n_blocos;
     ficheiro->modo = (modo=='R') ? true : false; 
-    ficheiro->matrix=malloc(sizeof(char*)*ficheiro->n_blocos);
-    unsigned char *codigo=malloc(256*sizeof(char));
+    ficheiro->matrix=malloc(sizeof(char*)*(ficheiro->n_blocos));
+    char *codigo=malloc(256*sizeof(char));
     for(iArray=skip_inicial(buffer);iArray<size;){
         if(*(buffer+iArray)==';'){
             iArray++;
@@ -58,20 +58,20 @@ FICHEIROCOD *matrix_code(int size,char *buffer){
             return ficheiro;
         }
           else if(*(buffer+iArray)=='@'){
-            sscanf((buffer+iArray),"@%d@",&bloco_size);
-            ficheiro->tamanhos[iTamanhos]=bloco_size;
-            iTamanhos++;
-            iArray=skip_arroba(1,iArray,buffer);
             iColuna=0;
             iLinha++;
             ficheiro->matrix[iLinha]=malloc(256*sizeof(char*));
             ficheiro->matrix[iLinha][iColuna]="";
+            sscanf((buffer+iArray),"@%d@",&bloco_size);
+            ficheiro->tamanhos[iTamanhos]=bloco_size;
+            iTamanhos++;
+            iArray=skip_arroba(1,iArray,buffer);
         }
         else{
             sscanf((buffer+iArray),"%[^;]",codigo);
             cod_size=strlen(codigo);
             if(cod_size>max) max=cod_size;
-            ficheiro->matrix[iLinha][iColuna]=malloc(sizeof(char)*256);
+            ficheiro->matrix[iLinha][iColuna]=malloc(sizeof(char)*cod_size);
             strcpy(ficheiro->matrix[iLinha][iColuna],codigo);
             iArray=skip_semicolon(iArray,buffer);
             codigo[0]='\0';
@@ -119,7 +119,8 @@ unsigned char char_to_print(int size,char* string){
 int newstring(int tam_ant,int nbloco,char*bloco_original,FICHEIROCOD cod,char*output){
     int index,tam_dep=0,size_cod=0,new_string_index=0,counter=0,max=cod.max_cod_size;
     unsigned char car;
-    unsigned char *codigo=malloc(sizeof(char)*(max+1));
+    char *codigo=malloc(sizeof(char)*(max+1));
+    int i=0;
     for(index=0;index<tam_ant;index++){
         car=bloco_original[index];
         size_cod=strlen(cod.matrix[nbloco][car]);
