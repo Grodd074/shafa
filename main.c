@@ -6,7 +6,6 @@
 #include "c.h"
 #include "d.h"
 #include "dados.h"
-#include "utils.h"
 #include "b.h"
 
 int main (int argc, char* argv[]) {
