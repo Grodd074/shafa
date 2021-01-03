@@ -4,7 +4,6 @@
 
 //Tratamento ficheiro cod
 
-//Função para aumentar o índice do buffer para ficar a apontar para o início do primeiro bloco de códigos
 int skip_inicial(char *buffer){
     int index=3;
     while(*(buffer+index)!='@'){
@@ -13,7 +12,6 @@ int skip_inicial(char *buffer){
     return index;
 }
 
-//Função para aumentar o índice do buffer para passar à frente um certo número de arrobas
 int skip_arroba(int nArroba,int index,char *buffer){
     while(nArroba>=0){
         if(*(buffer+index)=='@')nArroba--;
@@ -22,12 +20,10 @@ int skip_arroba(int nArroba,int index,char *buffer){
     return index;
 }
 
-//Função para aumentar o índice do buffer para passar à frente um código e parar no próximo ponto e vírgula
 int skip_semicolon(int index,char *buffer){
     while (*(buffer+index)!=';') index++;
     return index;
 }
-
 
 int cod_to_buffer(char**buffer,FILE*cod){
     int size_cod;
@@ -180,12 +176,12 @@ void printfile(FICHEIROCOD cod,FICHEIROORIGINAL file){
 }
 
 
-//Informação para a consola
+//Funções de ligação à main
 
 int data_console(FICHEIROORIGINAL origin, FICHEIROCOD cod, int *size, float tempo){
     int j = 1, n = 0, antes, depois, nbloco = cod.n_blocos;
     float taxa, taxa_global;
-    printf("Daniel Constantino Faria, a93187/João Augusto Macedo Moreira, a93326, MIEI/CD, 1-jan-2021\n"
+    printf("Daniel Constantino Faria, a93187/João Augusto Macedo Moreira, a93326, MIEI/CD, 3-jan-2021\n"
            "Módulo: c (codificação dum ficheiro de símbolos)\n"
            "Número de blocos: %d\n",nbloco);
     for (; j <= nbloco; j++, n++){
@@ -200,10 +196,6 @@ int data_console(FICHEIROORIGINAL origin, FICHEIROCOD cod, int *size, float temp
            "Tempo de execução do módulo (milissegundos): %f\n"
            "Ficheiro gerado: %s.shaf\n",taxa_global, tempo, origin.nome);
 }
-
-
-
-//Main do módulo C
 
 int moduloC(char *file_name){
     clock_t tempoOrd;
