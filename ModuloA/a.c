@@ -29,7 +29,7 @@ forca_compressao {
 // Função para criar uma string com a extensão .rle
 char *nomeRLE(char *file_name)
 {
-    char *nomeFile = malloc(sizeof(char) * 20);
+    char *nomeFile = malloc(sizeof(char) * 50);
     strcpy(nomeFile, file_name);
     char extensao[] = ".rle";
     unsigned char miyagi;
@@ -41,7 +41,7 @@ char *nomeRLE(char *file_name)
 // Função para criar uma string com a extensao .freq
 char *nomeFREQ(char *file_name)
 {
-    char *nomeFile = malloc(sizeof(char) * 20);
+    char *nomeFile = malloc(sizeof(char) * 50);
     strcpy(nomeFile, file_name);
     char extensao[] = ".freq";
     unsigned char miyagi;
@@ -51,9 +51,9 @@ char *nomeFREQ(char *file_name)
 }
 
 // Função para calcular o tamanho de um ficheiro
-int tamanhoFicheiro(char *file_name)
+unsigned long tamanhoFicheiro(char *file_name)
 {
-    int tamanhoBytes = 0;
+    unsigned long tamanhoBytes = 0;
 
     FILE *fp = fopen(file_name, "rb");
     if (fp == NULL)
@@ -62,18 +62,41 @@ int tamanhoFicheiro(char *file_name)
         return 0;
     }
 
-    fseek(fp, 0, SEEK_END);     // percorre o ficheiro todo
-    tamanhoBytes = ftell(fp);   // calcula o numero de caracteres
+    fseek(fp, 0, SEEK_END);   // percorre o ficheiro todo
+    tamanhoBytes = ftell(fp); // calcula o numero de caracteres
     fclose(fp);
 
     return tamanhoBytes;
 }
 
-// Função para inicializar o buffer que copia cada bloco para memória 
+unsigned char *criarBufferArrayRLE(char *file_name, int *BlocosRLE, int bloco)
+{
+    int i = 0;
+    unsigned char *v = malloc(sizeof(char) * (BlocosRLE[bloco])); // aloca espaço na memória
+
+    FILE *fp = fopen(file_name, "rb");
+    if (fp == NULL)
+    {
+        printf("Erro ao abrir o ficheiro\n");
+        return 0;
+    }
+    while (i < bloco - 1)
+    {
+        fseek(fp, BlocosRLE[i], SEEK_SET); // Atualiza o apontador dentro do ficheiro
+        i++;
+    }
+    fread(v, BlocosRLE[bloco], 1, fp); // Copia o bloco para memória
+
+    fclose(fp);
+
+    return v;
+}
+
+// Função para inicializar o buffer que copia cada bloco para memória
 unsigned char *criarBufferArray(char *file_name, int size, int bloco)
 {
     int i = 0;
-    int a = tamanhoFicheiro(file_name);
+
     unsigned char *v = malloc(sizeof(char) * size); // aloca espaço na memória
 
     FILE *fp = fopen(file_name, "rb");
@@ -83,9 +106,8 @@ unsigned char *criarBufferArray(char *file_name, int size, int bloco)
         return 0;
     }
 
-    fseek(fp, (size * bloco), SEEK_SET);   // Atualiza o apontador dentro do ficheiro
-    fread(v, size, 1, fp);                 // Copia o bloco para memória
-    v[size] = '\0';
+    fseek(fp, (size * bloco), SEEK_SET); // Atualiza o apontador dentro do ficheiro
+    fread(v, size, 1, fp);               // Copia o bloco para memória
 
     return v;
 }
@@ -94,7 +116,7 @@ unsigned char *criarBufferArray(char *file_name, int size, int bloco)
 unsigned char *criarBufferArrayFinal(char *file_name, int size, int sizeFinal, int bloco)
 {
     int i = 0;
-    int a = tamanhoFicheiro(file_name);
+    unsigned long a = tamanhoFicheiro(file_name);
     unsigned char *v = malloc(sizeof(char) * (sizeFinal)); // aloca espaço na memória
 
     FILE *fp = fopen(file_name, "rb");
@@ -104,9 +126,10 @@ unsigned char *criarBufferArrayFinal(char *file_name, int size, int sizeFinal, i
         return 0;
     }
 
-    fseek(fp, size * bloco, SEEK_SET);  // Atualiza o apontador dentro do ficheiro
-    fread(v, sizeFinal, 1, fp);             
-    v[sizeFinal] = '\0';
+    fseek(fp, size * bloco, SEEK_SET); // Atualiza o apontador dentro do ficheiro
+    fread(v, sizeFinal, 1, fp);
+
+    fclose(fp);
 
     return v;
 }
@@ -117,19 +140,19 @@ int **criarBufferMatriz(int numeroBlocos)
     int i, bloco;
     int **j = malloc(sizeof(int *) * numeroBlocos); // aloca memória para os blocos
 
-    for (i = 0; i < numeroBlocos; i++)  // para cada bloco, aloca memória para os 256 caracteres possiveis
+    for (i = 0; i < numeroBlocos; i++) // para cada bloco, aloca memória para os 256 caracteres possiveis
         j[i] = malloc(sizeof(int *) * 256);
 
     for (bloco = 0; bloco < numeroBlocos; bloco++)
     {
         for (i = 0; i < 256; i++)
         {
-            j[bloco][i] = 0;    // percorre toda a matriz e inicializa-a a 0
+            j[bloco][i] = 0; // percorre toda a matriz e inicializa-a a 0
         }
     }
 
     return j;
-} 
+}
 
 // Função para comprimir o ficheiro original
 int compressaoRLE(char *file_name, unsigned char *v, int size, int bloco)
@@ -141,8 +164,8 @@ int compressaoRLE(char *file_name, unsigned char *v, int size, int bloco)
     int caracters = 0;
     unsigned char miyagi;
 
-    char nomeFile[20];
-    strcpy(nomeFile, nomeRLE(file_name));   // Cria o nome do ficheiro de escrita .rle
+    char *nomeFile = malloc(sizeof(char) * 50);
+    strcpy(nomeFile, nomeRLE(file_name)); // Cria o nome do ficheiro de escrita .rle
 
     FILE *ft = fopen(nomeFile, "ab");
     if (ft == NULL)
@@ -150,19 +173,21 @@ int compressaoRLE(char *file_name, unsigned char *v, int size, int bloco)
         printf("Erro a abrir ficheiro de escrita\n"); // Acabar de fazer a funcao compressao com base num array
         return 0;
     }
-    fseek(ft, (size * bloco), SEEK_SET);   // Altera o apontador dentro do ficheiro
+    fseek(ft, (size * bloco), SEEK_SET); // Altera o apontador dentro do ficheiro
     atual = v[i];
-    while (v[i] != '\0')    // Percorre o bloco lido para memória 
+    while (i < size) // Percorre o bloco lido para memória
     {
         previous = atual;
         i++;
         atual = v[i];
 
-        if (v[i] == 0) {
+        if (v[i] == 0)
+        {
             previous = atual;
             i++;
             atual = v[i];
-            while (atual == previous && contador < 255 && v[i] != '\0') {
+            while (atual == previous && contador < 255 && i < size)
+            {
                 contador++;
                 previous = atual;
                 i++;
@@ -175,12 +200,12 @@ int compressaoRLE(char *file_name, unsigned char *v, int size, int bloco)
             caracters += 3;
             contador = 1;
         }
-        else if (atual == previous)  // Enquanto o caracter atual for igual ao anterior incrementa o contador
+        else if (atual == previous) // Enquanto o caracter atual for igual ao anterior incrementa o contador
             contador++;
 
         else if (atual != previous)
         {
-            if (contador <= 3)  // Caso o contador seja <= 3 não compensa fazer a compressão
+            if (contador <= 3) // Caso o contador seja <= 3 não compensa fazer a compressão
             {
                 while (contador != 0)
                 {
@@ -190,7 +215,7 @@ int compressaoRLE(char *file_name, unsigned char *v, int size, int bloco)
                 }
                 contador = 1;
             }
-            else    // Caso contrário, contador > 3, vai fazer a compressão rle
+            else // Caso contrário, contador > 3, vai fazer a compressão rle
             {
                 fputc('\0', ft);
                 fprintf(ft, "%c", previous);
@@ -204,7 +229,7 @@ int compressaoRLE(char *file_name, unsigned char *v, int size, int bloco)
 
     fclose(ft);
 
-    return caracters;   // retorna o numero de caracteres após executada a compressão
+    return caracters; // retorna o numero de caracteres após executada a compressão
 }
 
 // Função para calcular a taxa de compressão
@@ -226,7 +251,7 @@ double taxaCompressao(int cZipped, unsigned char *v)
 }
 
 // Função para retornar em quantos blocos o ficheiro vai ser dividido
-int quantidadeBlocos(int tamanhoFicheiro, int size)
+int quantidadeBlocos(unsigned long tamanhoFicheiro, int size)
 {
 
     int blocos;
@@ -241,7 +266,7 @@ int quantidadeBlocos(int tamanhoFicheiro, int size)
 }
 
 // Função para imprimir o tamanho de cada bloco
-int imprimeTamanhoBlocos(int tamanhoFicheiro, int size)
+int imprimeTamanhoBlocos(unsigned long tamanhoFicheiro, int size)
 {
     double blocos;
     double resto;
@@ -249,9 +274,9 @@ int imprimeTamanhoBlocos(int tamanhoFicheiro, int size)
     resto = tamanhoFicheiro % size;  // calcula o resto * size
 
     if (blocos == 0)
-        printf("%d bytes\n", tamanhoFicheiro);
+        printf("%ld bytes\n", tamanhoFicheiro);
     else if (tamanhoFicheiro == size)
-        printf("%d bytes\n", tamanhoFicheiro);
+        printf("%ld bytes\n", tamanhoFicheiro);
     else if ((resto) >= 1024) // caso o resto >= 1024, vai imprimir o tamanho do bloco adicional
     {
         while (blocos > 0)
@@ -279,7 +304,7 @@ int imprimeTamanhoBlocos(int tamanhoFicheiro, int size)
 }
 
 // Função para calcular o tamanho do ultimo bloco
-int tamanhoUltimoBloco(int tamanhoFicheiro, int size)
+int tamanhoUltimoBloco(unsigned long tamanhoFicheiro, int size)
 {
     double blocos;
     double resto;
@@ -295,10 +320,11 @@ int tamanhoUltimoBloco(int tamanhoFicheiro, int size)
 }
 
 // Função para guardar em memória, a frequencia dos simbolos para cada bloco
-int **frequenciaCalculo(unsigned char *v, int bloco, int **j)
+int **frequenciaCalculo(unsigned char *v, int size, int bloco, int **j)
 {
-    int i = 0; // remover esta condição do i
-    while (v[i] != '\0')
+    int i = 0;  
+
+    while (i < size)
     {
         j[bloco][v[i]]++;
         i++;
@@ -306,14 +332,97 @@ int **frequenciaCalculo(unsigned char *v, int bloco, int **j)
     return j;
 }
 
+// Função com a finalidade de guardar num buffer as frequencias do ficheiro .rle
+int **calculoFrequenciaRLE(char *file_name, int *blocosRLE, int BlocosLength)
+{
+
+    int bloco = 0;
+    int **k;
+    unsigned char *v;
+
+    k = criarBufferMatriz(BlocosLength);    
+
+    while (bloco < BlocosLength)
+    {
+        v = criarBufferArrayRLE(file_name, blocosRLE, bloco);       // copia para memória uma lista de caracteres provenientes do ficheiro .rle
+        int size = blocosRLE[bloco];                                // armazena o tamanho dos blocos após a compressão
+        k = frequenciaCalculo(v, size, bloco, k);                   // efetua o cálculo das frequências
+        bloco++;
+    }
+    return k;
+}
+
+// Função com a finalidade de guardar num buffer as frequencias do ficheiro .rle
+int funcaoFrequenciaEscritaRLE(char *file_name, char k, int BlocosLength, int *blocosRLE)
+{
+
+    int **j = calculoFrequenciaRLE(file_name, blocosRLE, BlocosLength); // Funcao auxiliar para armazenar num buffer as frequencias
+
+    char *nomeFile = malloc(sizeof(char) * 50);
+    strcpy(nomeFile, nomeFREQ(file_name));                              // cria  nome do ficheiro a criar .freq
+
+    FILE *fp = fopen(nomeFile, "wb");
+
+    if (fp == NULL)
+    {
+        printf("Erro a abrir Ficheiro de escrita das Frequências\n");
+        return 0;
+    }
+
+    fprintf(fp, "@%c", k);            // Indicativo da ocorrência da compressão RLE
+    fprintf(fp, "@%d", BlocosLength); // Numero de Blocos Processados
+
+    if (BlocosLength == 1) // Caso apenas tenha sido processado 1 bloco
+    {
+        fprintf(fp, "@%d@", blocosRLE[0]);
+        for (int k = 0; k < 255; k++)
+        {
+            if (j[0][k] == j[0][k - 1])
+            {
+                fprintf(fp, ";"); // Frequencia igual ao caracter anterior
+            }
+            else
+            {
+                fprintf(fp, "%d;", j[0][k]); // Frequencia igual ao caracter anterior
+            }
+        }
+    }
+    else // Caso contrário, 1 <
+    {
+        int c, b;
+
+        for (b = 0; b < BlocosLength; b++)
+        {
+
+            fprintf(fp, "@%d@", blocosRLE[b]); // Indicativo de um novo bloco(tamanho)
+            for (c = 0; c < 255; c++)
+            {
+                if (c == 0)
+                    fprintf(fp, "%d;", j[b][0]);
+                else if (j[b][c] == j[b][c - 1])
+                {
+                    fprintf(fp, ";"); // Frequencia igual ao caracter anterior
+                }
+                else
+                {
+                    fprintf(fp, "%d;", j[b][c]); // Frequencia diferente do caracter anterior
+                }
+            }
+        }
+        fprintf(fp, "@0"); // Final do ficheiro
+        fclose(fp);
+
+        return 0;
+    }
+}
+
 // Função para escrever as frequencias de cada simbolo para cada bloco
-int funcaoFrequenciaEscrita(char *file_name, int **j, char k, int tamanhoFicheiro, int size, int numeroblocos)
+int funcaoFrequenciaEscrita(char *file_name, int **j, char k, unsigned long tamanhoFicheiro, int size, int numeroblocos)
 {
     int a = tamanhoUltimoBloco(tamanhoFicheiro, size); // Função para calcular o tamanho do último bloco
 
-    char nomeFile[20];
-    strcpy(nomeFile, nomeFREQ(file_name)); // Função para criar o nome do ficheiro .freq
-
+    char *nomeFile = malloc(sizeof(char) * 50);
+    strcpy(nomeFile, nomeFREQ(file_name)); // Função para criar o nome do ficheiro .fre30
     FILE *fp = fopen(nomeFile, "wb");
     if (fp == NULL)
     {
@@ -326,7 +435,7 @@ int funcaoFrequenciaEscrita(char *file_name, int **j, char k, int tamanhoFicheir
 
     if (numeroblocos == 1) // Caso apenas tenha sido processado 1 bloco
     {
-        fprintf(fp, "@%d@", tamanhoFicheiro);
+        fprintf(fp, "@%ld@", tamanhoFicheiro);
         for (int k = 0; k < 255; k++)
         {
             if (j[0][k] == j[0][k - 1])
@@ -398,10 +507,10 @@ void imprimeTamanhoBlocosRLE(int *blocosRLE, int BlocosLength)
 // Função para imprimir texto informativo na consola
 void imprimeTerminal(char *file_name, char m, int BlocosLength, int FileLength, int size, int taxa, int *blocosRle)
 {
-    char nomeFile[20];
+    char *nomeFile = malloc(sizeof(char) * 50);
     strcpy(nomeFile, nomeRLE(file_name)); // Função para criar o nome do ficheiro .rle
 
-    printf("Júlio Gonçalves, A93243, MIEI/CD, 19/12/2020\n");
+    printf("Júlio Gonçalves, A93243, MIEI/CD, 03/01/2021\n");
     printf("Módulo: A (Compressão e Cálculo da Frequência)\n");
     printf("Número de Blocos: %d\n", BlocosLength);
     printf("Tamanho dos blocos do Ficheiro Original: ");
@@ -409,14 +518,14 @@ void imprimeTerminal(char *file_name, char m, int BlocosLength, int FileLength, 
 
     if (m == 'R') // Caso o ficheiro tenha sido comprimido
     {
-        char nomeFile2[20];
+        char *nomeFile2 = malloc(sizeof(char) * 50);
         strcpy(nomeFile2, nomeFile);
         char extensao2[] = ".freq";
         strcat(nomeFile2, extensao2); // Função para criar o nome do ficheiro .rle.freq
 
-        char nomeFile3[20];
+        char *nomeFile3 = malloc(sizeof(char) * 50);
         strcpy(nomeFile3, nomeFREQ(file_name)); // Função para criar o nome do ficheiro .freq
-
+                                                // o file_name recebido ja é suposto ser .rle
         printf("Compressão RLE: %s (%d%c compressão)\n", nomeFile, taxa, '%');
         printf("Tamanho dos blocos do Ficheiro RLE: ");
         imprimeTamanhoBlocosRLE(blocosRle, BlocosLength);
@@ -424,7 +533,7 @@ void imprimeTerminal(char *file_name, char m, int BlocosLength, int FileLength, 
     }
     else // Caso o ficheiro não tenha sido comprimido
     {
-        char nomeFile3[20];
+        char *nomeFile3 = malloc(sizeof(char) * 50);
         strcpy(nomeFile3, nomeFREQ(file_name));
 
         printf("Ficheiros Gerados: %s\n", nomeFile3);
@@ -440,18 +549,17 @@ int forca_compressao(char *file_name, int size)
     int caracterRLE = 0;
     int RleB = 0;
     int taxa;
-    int FileLength = tamanhoFicheiro(file_name);           // Calcula o tamanho do ficheiro .txt
+    unsigned long FileLength = tamanhoFicheiro(file_name); // Calcula o tamanho do ficheiro .txt
     int BlocosLength = quantidadeBlocos(FileLength, size); // Calcula em quantos blocos vai ser divido o ficheiro original
     int *blocosRLE = malloc(sizeof(int) * BlocosLength);   // Guarda o tamanho de cada bloco depois de comprimido
 
     if (BlocosLength > 1) // Condição de teste
     {
-
-        while (bloco < BlocosLength - 1) // Condição para saltar no ultimo bloco
+        j = criarBufferMatriz(BlocosLength); // Cria uma matriz
+        while (bloco < BlocosLength - 1)     // Condição para saltar no ultimo bloco
         {
             v = criarBufferArray(file_name, size, bloco);           // Copia um bloco para memória
-            j = criarBufferMatriz(BlocosLength);                    // Cria uma matriz
-            j = frequenciaCalculo(v, bloco, j);                     // Guarda em memória as frequencias de cada simbolo para cada bloco
+            j = frequenciaCalculo(v, size, bloco, j);               // Guarda em memória as frequencias de cada simbolo para cada bloco
             caracterRLE = compressaoRLE(file_name, v, size, bloco); // Comprime e escreve no ficheiro .rle bloco a bloco && retorna o numero de caracteres final.
 
             if (bloco == 0) // Calcula a taxa de compressão para o primeiro bloco
@@ -465,21 +573,31 @@ int forca_compressao(char *file_name, int size)
 
         int a = tamanhoUltimoBloco(FileLength, size);            // Calcula o tamanho do ultimo blocos
         v = criarBufferArrayFinal(file_name, size, a, bloco);    // Copia o ultimo bloco para memória
-        j = frequenciaCalculo(v, bloco, j);                      // Guarda em memória as frequencias de cada simbolo para o ultimo bloco
+        j = frequenciaCalculo(v, a, bloco, j);                   // Guarda em memória as frequencias de cada simbolo para o ultimo bloco
         blocosRLE[RleB] = compressaoRLE(file_name, v, a, bloco); // Guarda o tamanho do último bloco depois de comprimido
     }
     else // Caso o ficheiro seja todo processado num unico bloco
     {
+        int tamanho;
+        if (FileLength > size)
+            tamanho = size;
+        else
+            tamanho = FileLength;
 
-        v = criarBufferArray(file_name, size, bloco);           // Copia um bloco para memória
-        j = criarBufferMatriz(BlocosLength);                    // Cria uma matriz
-        j = frequenciaCalculo(v, bloco, j);                     // Guarda em memória as frequencias de cada simbolo para cada bloco
-        caracterRLE = compressaoRLE(file_name, v, size, bloco); // Comprime e escreve no ficheiro .rle bloco a bloco && retorna o numero de caracteres final.
+        v = criarBufferArray(file_name, t amanho, bloco);          // Copia um bloco para memória
+        j = criarBufferMatriz(BlocosLength);                       // Cria uma matriz
+        j = frequenciaCalculo(v, tamanho, bloco, j);               // Guarda em memória as frequencias de cada simbolo para cada bloco
+        caracterRLE = compressaoRLE(file_name, v, tamanho, bloco); // Comprime e escreve no ficheiro .rle bloco a bloco && retorna o numero de caracteres final.
 
         taxa = taxaCompressao(caracterRLE, v); // Calcula a taxa de compressão
         blocosRLE[RleB] = caracterRLE;         // Guarda o tamanho do bloco depois de comprimido
     }
-    funcaoFrequenciaEscrita(file_name, j, 'R', FileLength, size, BlocosLength);       // Função que cria e cálcula as frequencias de cada simboolo em cada bloco
+
+    char *nomeFile = malloc(sizeof(char) * 50);
+    strcpy(nomeFile, nomeRLE(file_name));
+
+    funcaoFrequenciaEscrita(file_name, j, 'R', FileLength, size, BlocosLength); // Função que cria e cálcula as frequencias de cada simboolo em cada bloco
+    funcaoFrequenciaEscritaRLE(nomeFile, 'R', BlocosLength, blocosRLE);
     imprimeTerminal(file_name, 'R', BlocosLength, FileLength, size, taxa, blocosRLE); // Função para escrever texto informativo no terminal
 
     return 0;
@@ -495,25 +613,32 @@ int normal_compressao(char *file_name, int size)
     int RleB = 0;
     char m = 'N';
     int taxa;
-    int FileLength = tamanhoFicheiro(file_name);           // Calcula o tamanho do ficheiro .txt
+    unsigned long FileLength = tamanhoFicheiro(file_name); // Calcula o tamanho do ficheiro .txt
     int BlocosLength = quantidadeBlocos(FileLength, size); // Calcula em quantos blocos vai ser divido o ficheiro original
     int *blocosRLE = malloc(sizeof(int) * BlocosLength);   // Guarda o tamanho de cada bloco depois de comprimido
 
-    v = criarBufferArray(file_name, size, bloco);           // Copia um bloco para memória
-    j = criarBufferMatriz(BlocosLength);                    // Cria uma matriz
-    j = frequenciaCalculo(v, bloco, j);                     // Guarda em memória as frequencias de cada simbolo para cada bloco
-    caracterRLE = compressaoRLE(file_name, v, size, bloco); // Comprime e escreve no ficheiro .rle bloco a bloco && retorna o numero de caracteres final.
-    taxa = taxaCompressao(caracterRLE, v);                  // Calcula a taxa de compressão
-    blocosRLE[RleB] = caracterRLE;                          // Guarda o tamanho de cada bloco depois de comprimido
-    RleB++;                                                 // Atualiza o bloco
-    bloco++;                                                // Atualiza o bloco
+    int tamanho;
+    if (FileLength > size)
+        tamanho = size;
+    else
+        tamanho = FileLength;
+
+    v = criarBufferArray(file_name, tamanho, bloco); // Copia um bloco para memória
+    j = criarBufferMatriz(BlocosLength);             // Cria uma matriz
+    j = frequenciaCalculo(v, tamanho, bloco, j);     // Guarda em memória as frequencias de cada simbolo para cada bloco
+
+    caracterRLE = compressaoRLE(file_name, v, tamanho, bloco); // Comprime e escreve no ficheiro .rle bloco a bloco && retorna o numero de caracteres final.
+    taxa = taxaCompressao(caracterRLE, v);                     // Calcula a taxa de compressão
+    blocosRLE[RleB] = caracterRLE;                             // Guarda o tamanho de cada bloco depois de comprimido
+    RleB++;                                                    // Atualiza o bloco
+    bloco++;                                                   // Atualiza o bloco
 
     if (taxa >= 5 && BlocosLength > 1) // Condição de teste
     {
         while (bloco < BlocosLength - 1) // Condição para saltar no ultimo bloco
         {
             v = criarBufferArray(file_name, size, bloco);               // Copia um bloco para memória
-            j = frequenciaCalculo(v, bloco, j);                         // Guarda em memória as frequencias de cada simbolo para cada bloco
+            j = frequenciaCalculo(v, size, bloco, j);                   // Guarda em memória as frequencias de cada simbolo para cada bloco
             blocosRLE[RleB] = compressaoRLE(file_name, v, size, bloco); // Guarda o tamanho de cada bloco depois de comprimido
             RleB++;                                                     // Atualiza o bloco
             bloco++;                                                    // Atualiza o bloco
@@ -522,7 +647,7 @@ int normal_compressao(char *file_name, int size)
 
         int a = tamanhoUltimoBloco(FileLength, size);            // Calcula o tamanho do ultimo blocos
         v = criarBufferArrayFinal(file_name, size, a, bloco);    // Copia o ultimo bloco para memória
-        j = frequenciaCalculo(v, bloco, j);                      // Guarda em memória as frequencias de cada simbolo para o ultimo bloco
+        j = frequenciaCalculo(v, size, bloco, j);                // Guarda em memória as frequencias de cada simbolo para o ultimo bloco
         blocosRLE[RleB] = compressaoRLE(file_name, v, a, bloco); // Guarda o tamanho do último bloco depois de comprimido
     }
     else if (taxa < 5 && BlocosLength > 1)
@@ -530,26 +655,30 @@ int normal_compressao(char *file_name, int size)
         while (bloco < BlocosLength - 1) // Condição para saltar no ultimo bloco
         {
             v = criarBufferArray(file_name, size, bloco); // Copia um bloco para memória
-            j = frequenciaCalculo(v, bloco, j);           // Guarda em memória as frequencias de cada simbolo para cada bloco
+            j = frequenciaCalculo(v, size, bloco, j);     // Guarda em memória as frequencias de cada simbolo para cada bloco
             bloco++;                                      // Atualiza o bloco
             free(v);                                      // Liberta espaço alocado na memória
         }
 
         int a = tamanhoUltimoBloco(FileLength, size);         // Calcula o tamanho do ultimo blocos
         v = criarBufferArrayFinal(file_name, size, a, bloco); // Copia o ultimo bloco para memória
-        j = frequenciaCalculo(v, bloco, j);                   // Guarda em memória as frequencias de cada simbolo para o ultimo bloco
+        j = frequenciaCalculo(v, a, bloco, j);                // Guarda em memória as frequencias de cada simbolo para o ultimo bloco
     }
 
     if (taxa >= 5)
     { // Altera o char indicativo da compressão
         m = 'R';
-        funcaoFrequenciaEscrita(file_name, j, m, FileLength, size, BlocosLength);       // Função que cria e cálcula as frequencias de cada simboolo em cada bloco
+        char *nomeFile = malloc(sizeof(char) * 50);
+        strcpy(nomeFile, nomeRLE(file_name));
+
+        funcaoFrequenciaEscrita(file_name, j, m, FileLength, size, BlocosLength); // Função que cria e cálcula as frequencias de cada simboolo em cada bloco
+        funcaoFrequenciaEscritaRLE(nomeFile, m, BlocosLength, blocosRLE);
         imprimeTerminal(file_name, m, BlocosLength, FileLength, size, taxa, blocosRLE); // Função para escrever texto informativo no terminal
     }
 
     if (taxa < 5) // No caso de não ter feito  a compressão, vai eliminar o ficheiro criado para a compressão do primeiro bloco
     {
-        char nomeFile[20];
+        char *nomeFile = malloc(sizeof(char) * 50);
         strcpy(nomeFile, nomeRLE(file_name));
         remove(nomeFile);
         funcaoFrequenciaEscrita(file_name, j, m, FileLength, size, BlocosLength);       // Função que cria e cálcula as frequencias de cada simboolo em cada bloco
@@ -561,7 +690,7 @@ int normal_compressao(char *file_name, int size)
 // Funcao Principal Modulo A
 int moduloA(char *file_name, int default_size, int force_RLE)
 {
-    int FileLength = tamanhoFicheiro(file_name); // calcula o tamanho do ficheiro original
+    unsigned long FileLength = tamanhoFicheiro(file_name); // calcula o tamanho do ficheiro original
     clock_t tempo_i, tempo_f;
     double tempo;
 

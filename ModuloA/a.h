@@ -1,4 +1,6 @@
-//
+
+
+unsigned char *criarBufferArrayRLE(char *file_name, int *BlocosRLE, int bloco)//
 // Created by krec on 09/12/20.
 //
 
@@ -25,6 +27,13 @@ char *nomeFREQ(char *file_name);
 */
 int tamanhoFicheiro(char *file_name);
 
+/**
+ * @char *file_name - Nome do Ficheiro
+ * int *blocosRLE - Buffer para guardar o tamanho de cada bloco após efetuada a Compresão RLE
+ * int bloco - Numero do Bloco que está a ler
+ * return numero de caracteres
+*/
+unsigned char *criarBufferArrayRLE(char *file_name, int *BlocosRLE, int bloco)
 /**
  * @char *file_name - Nome do Ficheiro
  * int size - Tamanho dos Blocos
@@ -92,6 +101,23 @@ int tamanhoUltimoBloco(int tamanhoFicheiro, int size);
  * return Buffer
 */
 int **frequenciaCalculo(unsigned char *v, int bloco, int **j);
+
+/**
+ * @char *file_name - Nome do Ficheiro
+ * int *blocosRLE - Buffer para guardar o tamanho de cada bloco após efetuada a Compresão RLE
+ * int BlocosLength - Número de Blocos em que o ficheiro foi dividido
+ * return numero de caracteres
+*/
+int **calculoFrequenciaRLE(char *file_name, int *blocosRLE, int BlocosLength)
+
+/**
+ * @char *file_name - Nome do Ficheiro
+ * char k - char que indica se foi efetua a compressão RLE
+ * int *blocosRLE - Buffer para guardar o tamanho de cada bloco após efetuada a Compresão RLE
+ * int bloco - Numero do Bloco que está a ler
+ * return numero de caracteres
+*/
+int funcaoFrequenciaEscritaRLE(char *file_name, char k, int BlocosLength, int *blocosRLE)
 
 /**
  * @char *file_name - Nome do Ficheiro
