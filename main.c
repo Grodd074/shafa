@@ -47,9 +47,9 @@ int main (int argc, char* argv[]) {
                  if (argv[i][0] == 'r') descm_RLE = 1;
                  else if (argv[i][0] == 's') descm_SF = 1;
                  i++;
-        }
+            }
         i++;
-    }
+        }
     }
 
     if (argv[2][1] == 'm') { // Condição para testar se foi chamado apenas um módulo.

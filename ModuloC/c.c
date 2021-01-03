@@ -5,8 +5,10 @@
 #include <time.h>
 
 
+
 //Tratamento ficheiro cod
 
+//Função para aumentar o índice do buffer para ficar a apontar para o início do primeiro bloco de códigos
 int skip_inicial(char *buffer){
     int index=3;
     while(*(buffer+index)!='@'){
@@ -15,6 +17,7 @@ int skip_inicial(char *buffer){
     return index;
 }
 
+//Função para aumentar o índice do buffer para passar à frente um certo número de arrobas
 int skip_arroba(int nArroba,int index,char *buffer){
     while(nArroba>=0){
         if(*(buffer+index)=='@')nArroba--;
@@ -23,10 +26,12 @@ int skip_arroba(int nArroba,int index,char *buffer){
     return index;
 }
 
+//Função para aumentar o índice do buffer para passar à frente um código e parar no próximo ponto e vírgula
 int skip_semicolon(int index,char *buffer){
     while (*(buffer+index)!=';') index++;
     return index;
 }
+
 
 int cod_to_buffer(char**buffer,FILE*cod){
     int size_cod;
