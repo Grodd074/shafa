@@ -1,4 +1,3 @@
-
 #include "c.h"
 
 
@@ -210,7 +209,7 @@ int moduloC(char *file_name){
     clock_t tempoOrd;
     tempoOrd = clock();
 
-    
+    printf("MODULO C\n\n");
 
     int i = strlen(file_name);
     char *str = malloc(i + 5);
@@ -221,8 +220,6 @@ int moduloC(char *file_name){
     FILE *cod;
     file = fopen(file_name, "rb");
     cod = fopen(str, "rb");
-
-   
 
     if (cod != NULL){
         FICHEIROCOD codfile;
