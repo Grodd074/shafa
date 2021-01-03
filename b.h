@@ -2,7 +2,7 @@
 #define SHAFA_MODULOB_B_H
 
 #include <stdio.h>
-#include "../Common/dados.h"
+#include "dados.h"
 
 SINAL moduloB(char* file_name);
 
@@ -19,7 +19,6 @@ void sortLLexiographically (LSYMBFREQ* l); // organiza a lligada por ordem decre
 
 LSYMBFREQ* llSymbFreq(SYMBSFREQ* symbs); // devolve array de lligada, cada posicao no array e um bloco cada lligada
                                         // contem um par (simbolo,frequencia)
-
 int llParaArray(LSYMBFREQ l, int ** arr);
 int calcularMelhorDivisao (int * freqs, int i, int j);
 void addBitToCodes(char bit, LBINSTR* codes, int start, int end);
@@ -28,4 +27,7 @@ void fillLSymbFreqWithBin (LSYMBFREQ* l, LBINSTR* codigos);
 
 void escreveMetadata (FILE* fp, SYMBSFREQ* symbs);
 void escreveCod (char* file_name, SYMBSFREQ* symbs, LSYMBFREQ* l);
+char* nomeDoFicheiro(char *file_name);
+void printInfoModulo (char *file_name, SYMBSFREQ* symbs, double time_spent);
+
 #endif //SHAFA_MODULOB_B_H

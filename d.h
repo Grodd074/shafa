@@ -5,7 +5,7 @@
 #ifndef SHAFA_D_H
 #define SHAFA_D_H
 
-#include "../Common/dados.h"
+#include "dados.h"
 
 SINAL moduloD(char* file_name, int descm_RLE, int descm_SF);
 

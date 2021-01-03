@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "ModuloA/a.h"
+#include "a.h"
 //#include "ModuloB/b.h"
-#include "ModuloC/c.h"
-#include "ModuloD/d.h"
-#include "Common/dados.h"
-#include "Common/utils.h"
+#include "c.h"
+#include "d.h"
+#include "dados.h"
+#include "utils.h"
+#include "b.h"
 
 int main (int argc, char* argv[]) {
     int default_size = 65536;
@@ -53,13 +54,13 @@ int main (int argc, char* argv[]) {
 
     if (argv[2][1] == 'm') { // Condição para testar se foi chamado apenas um módulo.
         if (argv[3][0] == 'f') moduloA(file_name, default_size, force_RLE);
-    //    else if (argv[3][0] == 't') moduloB(file_name);
+        else if (argv[3][0] == 't') moduloB(file_name);
         else if (argv[3][0] == 'c') moduloC(file_name);
         else if (argv[3][0] == 'd') moduloD(file_name, descm_RLE, descm_SF);
     }
     else { // Caso contrário, executa o programa todo.
         moduloA(file_name, default_size, force_RLE);
-    //  moduloB(file_name);
+        moduloB(file_name);
         moduloC(file_name);
         moduloD(file_name, descm_RLE, descm_SF);
     }
