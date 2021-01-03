@@ -8,11 +8,10 @@
 
 SINAL moduloB(char* file_name)
 {
+    clock_t begin = clock();
     SINAL s = OK;
     SYMBSFREQ* symbs = inicializarSymbFreq();
     s = readFreqs(symbs, file_name);
-
-    clock_t begin = clock();
 
     LSYMBFREQ* l = llSymbFreq(symbs); // array de lligada (todos os blocos)
     for(int i=0; i<symbs->n_blocks; i++)
@@ -394,17 +393,6 @@ void printInfoModulo (char *file_name, SYMBSFREQ* symbs, double time_spent)
     printf("Tamanho dos blocos analisados no ficheiro de símbolos: %lu/%ld\n", symbs->block_size, symbs->last_block_size);
     printf("Tempo de execução do módulo (milissegundos): %0.3lf ms\n", time_spent);
     printf("Ficheiro gerado: %s\n", nome_out);
-}
-
-FICHEIRO* inicializarFicheiro()
-{
-    FICHEIRO* f = malloc(sizeof(FICHEIRO));
-    f->total_data_size = 0;
-    f->block_size = 65536; // Default de 64 Kbytes
-    f->last_block_size = 0;
-    f->n_blocks = 0;
-    f->data = NULL;
-    f->ultimo_absorvido = false;
 }
 
 SYMBSFREQ* inicializarSymbFreq()
