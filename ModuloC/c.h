@@ -2,6 +2,10 @@
 #define SHAFA_C_H
 
 #include "../Common/dados.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
 typedef struct ficheirocod{
     bool modo;
