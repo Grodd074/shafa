@@ -48,7 +48,7 @@ FICHEIROCOD *matrix_code(int size,char *buffer){
     ficheiro->tamanhos=malloc(sizeof(int)*n_blocos);
     ficheiro->n_blocos=n_blocos;
     ficheiro->modo = (modo=='R') ? true : false; 
-    ficheiro->matrix=malloc((ficheiro->n_blocos));
+    ficheiro->matrix=malloc(sizeof(char**)*n_blocos);
     char *codigo=malloc(256);
     for(iArray=skip_inicial(buffer);iArray<size;){
         if(*(buffer+iArray)==';'){
@@ -63,7 +63,7 @@ FICHEIROCOD *matrix_code(int size,char *buffer){
           else if(*(buffer+iArray)=='@'){
             iColuna=0;
             iLinha++;
-            ficheiro->matrix[iLinha]=malloc(256);
+            ficheiro->matrix[iLinha]=malloc(sizeof(char*)*256);
             ficheiro->matrix[iLinha][iColuna]="";
             sscanf((buffer+iArray),"@%d@",&bloco_size);
             ficheiro->tamanhos[iTamanhos]=bloco_size;
@@ -93,10 +93,10 @@ FICHEIROORIGINAL file_to_buffers(FILE *fp, FICHEIROCOD cod, FICHEIROORIGINAL fic
     int nblocos = cod.n_blocos, sizeblocos;
     bool modo = cod.modo;
     fseek(fp, 0L, SEEK_SET);
-    unsigned char **buffer_file = malloc(nblocos);
+    unsigned char **buffer_file = malloc(sizeof(char*)*nblocos);
     for (int i = 0; i < nblocos; i++){
         sizeblocos = cod.tamanhos[i];
-        buffer_file[i] = malloc(sizeblocos);
+        buffer_file[i] = malloc((sizeof(char))*sizeblocos);
         fread(buffer_file[i], sizeblocos, 1, fp);
     }
     ficheiro.buffer = buffer_file;
@@ -181,7 +181,6 @@ void printfile(FICHEIROCOD cod,FICHEIROORIGINAL file){
 }
 
 
-
 //Informação para a consola
 
 int data_console(FICHEIROORIGINAL origin, FICHEIROCOD cod, int *size, float tempo){
@@ -207,7 +206,7 @@ int data_console(FICHEIROORIGINAL origin, FICHEIROCOD cod, int *size, float temp
 
 //Main do módulo C
 
-SINAL moduloC(char *file_name){
+int moduloC(char *file_name){
     clock_t tempoOrd;
     tempoOrd = clock();
 
@@ -237,7 +236,7 @@ SINAL moduloC(char *file_name){
         printfile(codfile, originfile);
         fclose(cod);
         fclose(file);
-        data_console(originfile, codfile, tamanhos, ((clock() - tempoOrd) / (double)CLOCKS_PER_SEC));
+        data_console(originfile, codfile, tamanhos, 1000*((clock() - tempoOrd) / (double)CLOCKS_PER_SEC));
     }
     else{
         printf("Não existe o ficheiro %s\n", str);
