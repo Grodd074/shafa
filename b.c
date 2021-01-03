@@ -5,11 +5,15 @@
 #include "dados.h"
 #include "stdlib.h"
 #include "string.h"
+#include <time.h>
+
 SINAL moduloB(char* file_name)
 {
     SINAL s = OK;
     SYMBSFREQ* symbs = inicializarSymbFreq();
     s = readFreqs(symbs, file_name);
+
+    clock_t begin = clock();
 
     LSYMBFREQ* l = llSymbFreq(symbs); // array de lligada (todos os blocos)
     for(int i=0; i<symbs->n_blocks; i++)
@@ -22,46 +26,11 @@ SINAL moduloB(char* file_name)
         fillLSymbFreqWithBin( &(l[i]), codigos);
 
     }
-
-
- /*
-    for (int i=0; i<tamanho; i++)
-        printf("%d\n", arr[i]);
-
-    printf("\n");
-
-
-
-    for (int i=0;i<tamanho;i++){
-        while(codigos[i] != NULL){
-            printf("%c", codigos[i]->c);
-            codigos[i] = codigos[i]->prox;
-        }
-        printf("\n");
-    }
-*/
-    /*LSYMBFREQ* arrll = passo1(symbs);
-    for(int i=0; i<symbs->n_blocks; i++) {
-        while (arrll[i] != NULL)
-        {
-            printf("b%d %c => %d\n",i, arrll[i]->symb, arrll[i]->freq);
-            arrll[i] = arrll[i]->prox;
-        }
-    }*/
-    //sortLLexiographically(l);
-    /*for(int i=0; i<symbs->n_blocks; i++) {
-        while (l[i] != NULL) {
-            printf("b%d %c(%d) => %d ", i, l[i]->symb, l[i]->symb, l[i]->freq);
-            while (l[i]->bin_str != NULL){
-                printf("%c", l[i]->bin_str->c);
-                l[i]->bin_str = l[i]->bin_str->prox;
-            }
-            printf("\n");
-            l[i] = l[i]->prox;
-        }
-    }*/
     escreveCod(file_name, symbs, l);
 
+    clock_t end = clock();
+    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    printInfoModulo(file_name, symbs, time_spent*1000); // sent time in ms
     return s;
 }
 
@@ -74,9 +43,11 @@ void escreveMetadata (FILE* fp, SYMBSFREQ* symbs)
 
 void escreveCod (char* file_name, SYMBSFREQ* symbs, LSYMBFREQ* l)
 {
-    strcat(file_name, ".cod");
-    FILE* fp = fopen(file_name, "w");
-    if (!fp) printf("failed to open file: %s", file_name);
+    char* nome_out;
+    nome_out = nomeDoFicheiro(file_name);
+
+    FILE* fp = fopen(nome_out, "w");
+    if (!fp) printf("failed to open file: %s", nome_out);
     escreveMetadata(fp, symbs);
 
     for (int i=0;i<symbs->n_blocks; i++)
@@ -404,3 +375,24 @@ void calcularCodigosSF (int* freqs, LBINSTR* codes, int start, int end)
     }
 }
 
+char* nomeDoFicheiro(char*filename)
+{
+    char *final = malloc(sizeof(char) * (strlen(filename) - 3));
+    int a = strlen(filename);
+    for(int i = 0; i < (a-4); i++){
+        final[i] = filename[i];
+    }
+
+    strcat(final, "cod");
+    return final;
+}
+
+void printInfoModulo (char *file_name, SYMBSFREQ* symbs, double time_spent)
+{
+    char* nome_out = nomeDoFicheiro(file_name);
+    printf("João Cerquido a93289, Norberto Nunes a93162, MIEI/CD\n");
+    printf("Módulo: t (cálculo dos códigos dos símbolos)\n");
+    printf("Tamanho dos blocos analisados no ficheiro de símbolos: %lu/%ld\n", symbs->block_size, symbs->last_block_size);
+    printf("Tempo de execução do módulo (milissegundos): %0.3lf ms\n", time_spent);
+    printf("Ficheiro gerado: %s\n", nome_out);
+}

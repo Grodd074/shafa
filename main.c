@@ -7,12 +7,9 @@
 #include "d.h"
 #include "dados.h"
 #include "utils.h"
+#include "b.h"
 
-int main () {
-
-    int argc = 4;
-    char* argv[] = {"./shafa","aaa.txt","-m","c"};
-
+int main (int argc, char* argv[]) {
     int default_size = 65536;
     int force_RLE = 0; // Se estiver a 0, a compressão RLE não é forçada. Se estiver a 1, a compressão RLE é forçada.
     int descm_RLE = 0; // Se estiver a 1, apenas realiza a descompressão RLE.
@@ -57,13 +54,13 @@ int main () {
 
     if (argv[2][1] == 'm') { // Condição para testar se foi chamado apenas um módulo.
         if (argv[3][0] == 'f') moduloA(file_name, default_size, force_RLE);
-    //    else if (argv[3][0] == 't') moduloB(file_name);
+        else if (argv[3][0] == 't') moduloB(file_name);
         else if (argv[3][0] == 'c') moduloC(file_name);
         else if (argv[3][0] == 'd') moduloD(file_name, descm_RLE, descm_SF);
     }
     else { // Caso contrário, executa o programa todo.
         moduloA(file_name, default_size, force_RLE);
-    //  moduloB(file_name);
+        moduloB(file_name);
         moduloC(file_name);
         moduloD(file_name, descm_RLE, descm_SF);
     }
