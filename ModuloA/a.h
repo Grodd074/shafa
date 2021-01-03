@@ -14,8 +14,6 @@
 */
 char *nomeRLE(char *file_name);
 
-unsigned char *criarBufferArrayRLE(char *file_name, int *BlocosRLE, int bloco);
-
 /**
  * @char *file_name - Nome do Ficheiro Original
  * return Nome do Ficheiro.freq
@@ -26,7 +24,7 @@ char *nomeFREQ(char *file_name);
  * @char *file_name - Nome do Ficheiro
  * return numero de caracteres
 */
-int tamanhoFicheiro(char *file_name);
+unsigned long tamanhoFicheiro(char *file_name);
 
 /**
  * @char *file_name - Nome do Ficheiro
@@ -79,21 +77,21 @@ double taxaCompressao(int cZipped, unsigned char *v);
  * int size - Tamanho definido dos blocos
  * return Numero de Blocos
 */
-int quantidadeBlocos(int tamanhoFicheiro, int size);
+int quantidadeBlocos(unsigned long tamanhoFicheiro, int size);
 
 /**
  * int tamanhoFicheiro - Tamanho do ficheiro original
  * int size - Tamanho definido dos blocos
  * return Tamanho do Ultimo Bloco
 */
-int imprimeTamanhoBlocos(int tamanhoFicheiro, int size);
+int imprimeTamanhoBlocos(unsigned long tamanhoFicheiro, int size);
 
 /**
  * int tamanhoFicheiro - Tamanho do ficheiro original
  * int size - Tamanho definido dos blocos
  * return Tamanho do Ultimo Bloco
 */
-int tamanhoUltimoBloco(int tamanhoFicheiro, int size);
+int tamanhoUltimoBloco(unsigned long tamanhoFicheiro, int size);
 
 /**
  * unsigned char *v - Buffer que contem o bloco em memória
@@ -101,7 +99,7 @@ int tamanhoUltimoBloco(int tamanhoFicheiro, int size);
  * int **j - Buffer que contem as frequencias de cada caracter para cada bloco
  * return Buffer
 */
-int **frequenciaCalculo(unsigned char *v, int bloco, int **j);
+int **frequenciaCalculo(unsigned char *v, int size, int bloco, int **j);
 
 /**
  * @char *file_name - Nome do Ficheiro
@@ -130,7 +128,7 @@ int funcaoFrequenciaEscritaRLE(char *file_name, char k, int BlocosLength, int *b
  * return Buffer
  * return 0
 */
-int funcaoFrequenciaEscrita(char *file_name, int **j, char k, int tamanhoFicheiro, int size, int numeroblocos);
+int funcaoFrequenciaEscrita(char *file_name, int **j, char k, unsigned long tamanhoFicheiro, int size, int numeroblocos);
 
 /**
  * int *blocosRLE - Buffer para guardar o tamanho de cada bloco após efetuada a Compresão RLE

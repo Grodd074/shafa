@@ -1,5 +1,5 @@
 
-#include <a.h>
+#include "a.h"
 
 /* 
 Módulo A -- Compressão RLE e Cálculo das Frequências sobre o ficheiro original e comprimido.
