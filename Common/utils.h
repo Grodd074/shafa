@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include "dados.h"
-#include "debug.h"
 
 SINAL loadFile (FICHEIRO* f, char* file_name, unsigned long block_size);
 

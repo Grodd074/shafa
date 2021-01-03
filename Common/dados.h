@@ -3,7 +3,6 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
-#include "debug.h"
 
 #define MIN_FILE_SIZE 1024 // 1Kbyte
 

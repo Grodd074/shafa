@@ -7,7 +7,6 @@
 #include "ModuloD/d.h"
 #include "Common/dados.h"
 #include "Common/utils.h"
-#include "Common/debug.h"
 
 int main (int argc, char* argv[]) {
     int default_size = 65536;
