@@ -1,14 +1,18 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "ModuloA/a.h"
+#include "a.h"
 //#include "ModuloB/b.h"
-#include "ModuloC/c.h"
-#include "ModuloD/d.h"
-#include "Common/dados.h"
-#include "Common/utils.h"
+#include "c.h"
+#include "d.h"
+#include "dados.h"
+#include "utils.h"
 
-int main (int argc, char* argv[]) {
+int main () {
+
+    int argc = 4;
+    char* argv[] = {"./shafa","aaa.txt","-m","c"};
+
     int default_size = 65536;
     int force_RLE = 0; // Se estiver a 0, a compressão RLE não é forçada. Se estiver a 1, a compressão RLE é forçada.
     int descm_RLE = 0; // Se estiver a 1, apenas realiza a descompressão RLE.

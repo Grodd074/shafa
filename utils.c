@@ -16,7 +16,7 @@ SINAL loadFileMem(FICHEIRO* f, char* file_name)
     if (!fp) s = ERRO_IO;
     else
     {
-        PRINT_DEBUG("%s aberto com sucesso\n", file_name);
+        printf("%s aberto com sucesso\n", file_name);
 
         // Alloca espaço no array de data para os caracters
         if (!f->ultimo_absorvido) // O ultimo bloco e maior que 1Kb
@@ -52,7 +52,7 @@ SINAL loadFileMem(FICHEIRO* f, char* file_name)
         }
 
         cr = fclose(fp);
-        if (cr == 0) PRINT_DEBUG("%s fechado com sucesso\n", file_name);
+        if (cr == 0) printf("%s fechado com sucesso\n", file_name);
         else s = ERRO_IO;
     }
 

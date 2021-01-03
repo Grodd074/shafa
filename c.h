@@ -1,7 +1,7 @@
 #ifndef SHAFA_C_H
 #define SHAFA_C_H
 
-#include "../Common/dados.h"
+#include "dados.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

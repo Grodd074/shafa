@@ -1,8 +1,8 @@
 #include "b.h"
 #include "stdio.h"
 #include "ctype.h"
-#include "../Common/utils.h"
-#include "../Common/dados.h"
+#include "utils.h"
+#include "dados.h"
 #include "stdlib.h"
 #include "string.h"
 SINAL moduloB(char* file_name)

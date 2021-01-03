@@ -2,7 +2,7 @@
 #define SHAFA_MODULOB_B_H
 
 #include <stdio.h>
-#include "../Common/dados.h"
+#include "dados.h"
 
 SINAL moduloB(char* file_name);
 
