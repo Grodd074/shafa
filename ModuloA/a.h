@@ -2,6 +2,11 @@
 #define SHAFA_A_H
 
 #include "../Common/dados.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+#include <time.h>
 
 /**
  * @char *file_name - Nome do Ficheiro Original

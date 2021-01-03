@@ -1,29 +1,35 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-#include <time.h>
+
+#include <a.h>
 
 /* 
 Módulo A -- Compressão RLE e Cálculo das Frequências sobre o ficheiro original e comprimido.
+Júlio Beites Gonçalves - a93243 - 3/01/2021
 
 Este módulo é chamado, recebendo como inputs, o nome do ficheiro, o tamanho definido para o processamento de blocos e por último um inteiro
 indicativo se o comando "-c r" foi introduzido, no caso de o seu valor ser 1 a compressão RLE é forçada, o seu valor é 0 caso contrário.
 
-
 As duas funções principais deste bloco são: 
 
 normal_compressao {
-    Função que executa o módulo normalmente, calculando a taxa de compressão do primeiro bloco, e no caso desta ser superior a 5% comprime o resto do ficheiro.
-    Adicionalmente, vai calcular as frequencias sobre o ficheiro .rle e sobre o ficheiro .txt.
 
-    Caso a taxa de compressão do primeiro bloco seja inferior a 5%, a função apenas vai efetuar o calculo das frequencias sobre o ficheiro .txt .
+  - A lógica seguida sempre pelo meu programa é a cópia de um bloco do ficheiro para memória, 
+seguido do cálculo das frequências sobre o ficheiro original. De seguida efetua a compressão RLE sobre o bloco 
+em memória e escreve diretamente no ficheiro de saida .rle. 
+  - Adicionalmente, foram criadas funções idênticas mas que se limitam apenas ao processamento do último bloco 
+do ficheiro uma vez que este vai apresentar caracteristicas diferentes dos restantes. Ao longo da execução desta 
+função são também guardadas informações que virão a ser utilizadas depois tais como: o tamanho de cada bloco após 
+a sua compressão, a taxa de compressão, o tamanho do ficheiro original, numero de blocos a serem processados, entre outros...
+  - O cálculo das frequências sobre o ficheiro .rle apenas é efetuada perto do final da execução do programa.
+  - Este copia cada bloco já compresso para memória novamente, onde efetua o cálculo das suas frequências.
+  - Posteriormente, vai criar um ficheiro com a extensão .freq onde vai inscrever a informação referente ao ficheiro .rle .
+  - Por último, é invocada a função imprimeTerminal com a finalidade de reproduzir no terminal um texto informativo referente à execução do módulo A.
 }
 
 forca_compressao {
-    Função que executa o módulo no caso de a compressão RLE ser forçada.
-    Adicionalmente, vai calcular as frequencias sobre o ficheiro .rle e sobre o ficheiro .txt.
-}
+  
+  - Esta função é semelhante à anterior, diferenciando-se na ausência das restrições que impediam
+   a função de executar a compressão RLE consequente de uma taxa de compressão inferior a 5\%.
+   }
 */
 
 // Função para criar uma string com a extensão .rle
@@ -584,7 +590,7 @@ int forca_compressao(char *file_name, int size)
         else
             tamanho = FileLength;
 
-        v = criarBufferArray(file_name, t amanho, bloco);          // Copia um bloco para memória
+        v = criarBufferArray (file_name, tamanho, bloco);          // Copia um bloco para memória
         j = criarBufferMatriz(BlocosLength);                       // Cria uma matriz
         j = frequenciaCalculo(v, tamanho, bloco, j);               // Guarda em memória as frequencias de cada simbolo para cada bloco
         caracterRLE = compressaoRLE(file_name, v, tamanho, bloco); // Comprime e escreve no ficheiro .rle bloco a bloco && retorna o numero de caracteres final.
