@@ -4,6 +4,45 @@
 #include <stdio.h>
 #include "dados.h"
 
+
+typedef struct
+{
+    bool ultimo_absorvido;
+    unsigned long long total_data_size;
+    long long n_blocks;
+    unsigned long block_size;
+    long last_block_size;
+    char ** data;
+} FICHEIRO;
+
+typedef struct
+{
+    bool rle_compression;
+    long long n_blocks;
+    unsigned long block_size;
+    long last_block_size;
+    int** freqs;
+} SYMBSFREQ;
+
+typedef struct BINSTRNODE
+{
+    char c;
+    struct BINSTRNODE* prox;
+} *LBINSTR;
+
+typedef struct SYMBFREQNODE
+{
+    unsigned char symb;
+    int freq;
+    LBINSTR bin_str;
+    struct SYMBFREQNODE* prox;
+} *LSYMBFREQ;
+
+FICHEIRO* inicializarFicheiro();
+SYMBSFREQ* inicializarSymbFreq();
+SYMBSFREQ* allocateFreqsBlocks(SYMBSFREQ* s, long long n);
+
+
 SINAL moduloB(char* file_name);
 
 void readMetaData (FILE* fp, char* file_name, SYMBSFREQ* symbs);
@@ -29,5 +68,8 @@ void escreveMetadata (FILE* fp, SYMBSFREQ* symbs);
 void escreveCod (char* file_name, SYMBSFREQ* symbs, LSYMBFREQ* l);
 char* nomeDoFicheiro(char *file_name);
 void printInfoModulo (char *file_name, SYMBSFREQ* symbs, double time_spent);
+
+int fileSize(char* file_name);
+int soma(int* arr, int i, int j);
 
 #endif //SHAFA_MODULOB_B_H

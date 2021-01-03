@@ -1,7 +1,6 @@
 #include "b.h"
 #include "stdio.h"
 #include "ctype.h"
-#include "utils.h"
 #include "dados.h"
 #include "stdlib.h"
 #include "string.h"
@@ -395,4 +394,54 @@ void printInfoModulo (char *file_name, SYMBSFREQ* symbs, double time_spent)
     printf("Tamanho dos blocos analisados no ficheiro de símbolos: %lu/%ld\n", symbs->block_size, symbs->last_block_size);
     printf("Tempo de execução do módulo (milissegundos): %0.3lf ms\n", time_spent);
     printf("Ficheiro gerado: %s\n", nome_out);
+}
+
+FICHEIRO* inicializarFicheiro()
+{
+    FICHEIRO* f = malloc(sizeof(FICHEIRO));
+    f->total_data_size = 0;
+    f->block_size = 65536; // Default de 64 Kbytes
+    f->last_block_size = 0;
+    f->n_blocks = 0;
+    f->data = NULL;
+    f->ultimo_absorvido = false;
+}
+
+SYMBSFREQ* inicializarSymbFreq()
+{
+    SYMBSFREQ* s = malloc(sizeof(SYMBSFREQ));
+    s->rle_compression = false;
+    s->n_blocks = 0;
+    s->block_size = 65536; // Default de 64 Kbytes
+    s->last_block_size = 0;
+    s->freqs = NULL;
+
+    return s;
+}
+
+SYMBSFREQ* allocateFreqsBlocks(SYMBSFREQ* s, long long n)
+{
+    s->freqs = malloc(n * sizeof(int*));
+    for(int i=0;i<n;i++){
+        s->freqs[i] = malloc(sizeof(int)*256);
+    }
+}
+
+int fileSize(char* file_name)
+{
+    // Le quantos caracters tem o ficheiro
+    FILE* fp = fopen(file_name, "r");
+    if (!fp) printf("Error opening file %s", file_name);
+    fseek( fp , 0 , SEEK_END);
+    int size = ftell( fp );
+    rewind( fp );
+    return size;
+}
+
+int soma(int* arr, int i, int j)
+{
+    if (i>j) return -1;
+    int soma = 0;
+    for(int k=i; k<=j; k++) soma += arr[k];
+    return soma;
 }
