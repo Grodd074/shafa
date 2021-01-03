@@ -214,7 +214,7 @@ SINAL moduloC(char *file_name){
     printf("MODULO C\n\n");
 
     int i = strlen(file_name);
-    char *str = malloc(i + 4);
+    char *str = malloc(i + 5);
     strcat(str, file_name);
     strcat(str, ".cod");
 
