@@ -25,7 +25,6 @@ SINAL moduloB(char* file_name)
 
     }
     escreveCod(file_name, symbs, l);
-
     clock_t end = clock();
     double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
     printInfoModulo(file_name, symbs, time_spent*1000); // sent time in ms
@@ -387,8 +386,14 @@ char* nomeDoFicheiro(char*filename)
 
 void printInfoModulo (char *file_name, SYMBSFREQ* symbs, double time_spent)
 {
+    time_t s = NULL;
+    struct tm* current_time;
+    s = time(NULL);
+    current_time = localtime(&s);
+
     char* nome_out = nomeDoFicheiro(file_name);
-    printf("João Cerquido a93289, Norberto Nunes a93162, MIEI/CD\n");
+    printf("%s\n", nome_out);
+    printf("João Cerquido a93289, Norberto Nunes a93162, MIEI/CD %d/%d/%d\n", current_time->tm_mday, current_time->tm_mon+1, current_time->tm_year+1900);
     printf("Módulo: t (cálculo dos códigos dos símbolos)\n");
     printf("Tamanho dos blocos analisados no ficheiro de símbolos: %lu/%ld\n", symbs->block_size, symbs->last_block_size);
     printf("Tempo de execução do módulo (milissegundos): %0.3lf ms\n", time_spent);
